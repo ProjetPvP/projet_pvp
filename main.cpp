@@ -137,25 +137,26 @@ bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, int 
             if (positionHeros.ligne+1 == 'm' )
             exit(EXIT_SUCCESS);
       }
+      exit(EXIT_SUCCESS);
       return false;
 }
 //==========================================================//
 //                      Hitbox                              //
 //==========================================================//
 
-void hitbox(t_ecran_de_jeu matrice)
-{
-      if(matrice->positionHeros.colonne<1)
-      {
-            if (matrice->positionHeros.ligne<1)
-            {
-                  for(int i=matrice->positionHeros.ligne;i<matrice->positionHeros.ligne+HAUTEURHEROSPIXEL; i++)
-                  {
-                        matrice->ecran[i][matrice->positionHeros.colonne] = 'h';
-                  }
-            }
-      }
-}
+//void hitbox(t_ecran_de_jeu matrice)
+//{
+//      if(matrice->positionHeros.colonne<1)
+//      {
+//            if (matrice->positionHeros.ligne<1)
+//            {
+//                  for(int i=matrice->positionHeros.ligne;i<matrice->positionHeros.ligne+HAUTEURHEROSPIXEL; i++)
+//                  {
+//                        matrice->ecran[i][matrice->positionHeros.colonne] = 'h';
+//                  }
+//            }
+//      }
+//}
 
 //==========================================================//
 //                      vérifier poussee                    //
@@ -172,6 +173,10 @@ bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros,
             else if (matrice->ecran[positionHeros.ligne][positionHeros.colonne-1] == ' ')
             {
                   return true;
+            }
+            else
+            {
+                  takedamage(matrice, direction, positionHeros, deplacement);
             }
       }
       else if (direction == DROITE)
@@ -257,14 +262,33 @@ void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb)
                         {
                               for(int i=0; i<LARGEURMINE; i++)
                               {
-                                    matrice->ecran[positionMine.x][matrice->positionHeros.colonne+i+1] = 'm';
-                                    matrice->ecran[matrice->positionHeros.ligne+HAUTEURHEROSPIXEL][matrice->positionHeros.colonne+i+1] = 'm';
+                                    matrice->ecran[positionMine.x][positionMine.y+i] = 'm';
+                                    matrice->ecran[positionMine.x+LARGEURMINE][positionMine.y+i] = 'm';
+                                    matrice->ecran[positionMine.x+i][positionMine.y] = 'm';
+                                    matrice->ecran[positionMine.x+i][positionMine.y+LARGEURMINE] = 'm';
                               }
                         }
                   }
 
             }
       }
+      int cpt=0;
+      for(int i=0; i<HAUTEUR; i++)
+      {
+            for(int j=0; j<LARGEUR; j++)
+            {
+                  if(matrice->ecran[i][j] != ' ')
+                  {
+                        fprintf(stderr,"%c",matrice->ecran[i][j]);
+                        cpt++;
+                  }
+
+            }
+            if(cpt != 0)
+            fprintf(stderr, "\n");
+            cpt=0;
+      }
+      cpt=0;
 }
 
 
