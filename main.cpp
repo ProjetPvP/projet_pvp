@@ -272,23 +272,6 @@ void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb)
 
             }
       }
-      int cpt=0;
-      for(int i=0; i<HAUTEUR; i++)
-      {
-            for(int j=0; j<LARGEUR; j++)
-            {
-                  if(matrice->ecran[i][j] != ' ')
-                  {
-                        fprintf(stderr,"%c",matrice->ecran[i][j]);
-                        cpt++;
-                  }
-
-            }
-            if(cpt != 0)
-            fprintf(stderr, "\n");
-            cpt=0;
-      }
-      cpt=0;
 }
 
 
