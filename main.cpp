@@ -200,23 +200,6 @@ int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur
             }
       }
 }
-//==========================================================//
-//                      Hitbox                              //
-//==========================================================//
-
-//void hitbox(t_ecran_de_jeu matrice)
-//{
-//      if(matrice->positionHeros.colonne<1)
-//      {
-//            if (matrice->positionHeros.ligne<1)
-//            {
-//                  for(int i=matrice->positionHeros.ligne;i<matrice->positionHeros.ligne+HAUTEURHEROSPIXEL; i++)
-//                  {
-//                        matrice->ecran[i][matrice->positionHeros.colonne] = 'h';
-//                  }
-//            }
-//      }
-//}
 
 //==========================================================//
 //                      vérifier poussee                    //
