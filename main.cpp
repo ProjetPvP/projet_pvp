@@ -65,10 +65,12 @@ t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne
       SDL_Surface * Heros = NULL;
       SDL_Surface * myMap = NULL;
       SDL_Surface * mine = NULL;
+      SDL_Surface * barreVie = NULL;
 
       SDL_Rect positionHeros;
       SDL_Rect positionMap;
       SDL_Rect positionMine;
+      SDL_Rect positionBarreVie;
       static int cpt = 0;
 
 //==========================================================//
@@ -81,7 +83,7 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
       {
             for (int j = 0; j<LARGEUR; j++)
             {
-                  if(i<50)
+                  if(i==50)
                   {
                         matrice->ecran[i][j] = 'b';
                   }
@@ -107,9 +109,10 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
 //==========================================================//
 
 
-void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran)
+void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie)
 {
       SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
+      SDL_BlitSurface(barreVie, NULL, ecran, &positionBarreVie);
 
       positionHeros.x = matrice->positionHeros.colonne;
       positionHeros.y = matrice->positionHeros.ligne;
@@ -274,7 +277,7 @@ void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb)
             matrice->positionHeros.colonne += nb;
       }
 
-      for (int i=0; i<HAUTEUR; i++)
+      for (int i=51; i<HAUTEUR; i++)
       {
             for (int j=0; j<LARGEUR; j++)
             {
@@ -333,9 +336,12 @@ int main ( int argc, char** argv )
       positionHeros.y = 300;
       positionMap.x = 0;
       positionMap.y = 0;
+      positionBarreVie.x = 0;
+      positionBarreVie.y = 0;
       t_ecran_de_jeu matrice;
       matrice = create_ecran_de_jeu(HAUTEUR, LARGEUR, positionHeros.x, positionHeros.y);
       initMatrice(matrice);
+      barreVie = SDL_CreateRGBSurface(SDL_HWSURFACE, 600, 50, 32, 0, 0, 0, 0);
       int continuer = 1;
        if (SDL_INIT_VIDEO == -1)
       {
@@ -405,7 +411,7 @@ int main ( int argc, char** argv )
 
 
 
-            LectureMatrice(matrice, ecran); // Affiche la matrice telle qu'elle est
+            LectureMatrice(matrice, ecran, barreVie); // Affiche la matrice telle qu'elle est
       }
 
     return 0;
