@@ -1,8 +1,9 @@
 # depslib dependency file v1.0
-1393954854 source:c:\users\olivier\desktop\projet prog\projet_pvp\main.cpp
+1393956528 source:c:\users\olivier\desktop\projet prog\projet_pvp\main.cpp
 	<stdlib.h>
 	<SDL/SDL.h>
 	<stdbool.h>
+	"matrice.h"
 
 1325738640 c:\users\olivier\desktop\projet prog\projet_pvp\sdl-1.2.15\include\sdl\sdl.h
 	"SDL_main.h"
@@ -193,4 +194,9 @@
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
+
+1393956672 c:\users\olivier\desktop\projet prog\projet_pvp\matrice.h
+	<stdlib.h>
+	<SDL/SDL.h>
+	<stdbool.h>
 
