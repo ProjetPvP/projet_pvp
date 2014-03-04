@@ -309,19 +309,9 @@ void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb)
                   {
                         matrice->ecran[i][j] = ' ';
                   }
-                  if ((matrice->positionHeros.ligne == j) && (matrice->positionHeros.colonne == i))
+                  if ((matrice->positionHeros.ligne == i) && (matrice->positionHeros.colonne == j))
                   {
                         matrice->ecran[i][j] = 'H';
-//                        for(int f=0; f<HAUTEURHEROSPIXEL; f++)
-//                        {
-//                              matrice->ecran[matrice->positionHeros.ligne+f+1][matrice->positionHeros.colonne] = 'M';
-//                              matrice->ecran[matrice->positionHeros.ligne+f+1][matrice->positionHeros.colonne+LARGEURHEROSPIXEL] = 'M';
-//                        }
-//                        for(int f=0; f<LARGEURHEROSPIXEL; f++)
-//                        {
-//                              matrice->ecran[matrice->positionHeros.ligne][matrice->positionHeros.colonne+f+1] = 'M';
-//                              matrice->ecran[matrice->positionHeros.ligne+HAUTEURHEROSPIXEL][matrice->positionHeros.colonne+f+1] = 'M';
-//                        }
                   }
             }
       }
@@ -329,10 +319,10 @@ void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb)
       {
             for(int i=0; i<LARGEURMINE; i++)
             {
-                  matrice->ecran[positionMine.y+i+1][positionMine.x] = 'm';
-                  matrice->ecran[positionMine.y+i+1][positionMine.x+LARGEURMINE] = 'm';
-                  matrice->ecran[positionMine.y][positionMine.x+i+1] = 'm';
-                  matrice->ecran[positionMine.y+LARGEURMINE][positionMine.x+i+1] = 'm';
+                  matrice->ecran[positionMine.y+i+1][positionMine.x] = 'M';
+                  matrice->ecran[positionMine.y+i+1][positionMine.x+LARGEURMINE] = 'M';
+                  matrice->ecran[positionMine.y][positionMine.x+i+1] = 'M';
+                  matrice->ecran[positionMine.y+LARGEURMINE][positionMine.x+i+1] = 'M';
             }
             int cpt2 = 0;
             for(int i=0; i<HAUTEUR; i++)
@@ -354,7 +344,7 @@ void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb)
             }
       }
       cpt++;
-      //verificationDeplacementHitbox(matrice, matrice->positionHeros, LARGEURHEROSPIXEL, HAUTEURHEROSPIXEL, direction, nb);
+      verificationDeplacementHitbox(matrice, matrice->positionHeros, LARGEURHEROSPIXEL, HAUTEURHEROSPIXEL, direction, nb);
 }
 
 
