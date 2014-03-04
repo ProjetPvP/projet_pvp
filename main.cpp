@@ -3,8 +3,8 @@
 #include <stdbool.h>
 #define HAUTEUR 400
 #define LARGEUR 600
-#define LARGEURHEROSPIXEL 24
-#define HAUTEURHEROSPIXEL 30
+#define LARGEURHEROSPIXEL 34
+#define HAUTEURHEROSPIXEL 34
 #define LARGEURMINE 20
 
 
@@ -81,7 +81,11 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
       {
             for (int j = 0; j<LARGEUR; j++)
             {
-                  if (matrice->positionHeros.ligne == i && matrice->positionHeros.colonne == j)
+                  if(i<50)
+                  {
+                        matrice->ecran[i][j] = 'b';
+                  }
+                  else if (matrice->positionHeros.ligne == i && matrice->positionHeros.colonne == j)
                   {
                         matrice->ecran[i][j] = 'H';
                         matrice->ecran[i-40][j-50] = 'M';
@@ -92,7 +96,7 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
                   }
                   else
                   {
-                  matrice->ecran[i][j] = ' ';
+                        matrice->ecran[i][j] = ' ';
                   }
             }
       }
@@ -106,26 +110,12 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
 void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran)
 {
       SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-      //SDL_BlitSurface(myMap, NULL, ecran, &positionMap);
-//      for(int i = 0; i<HAUTEUR; i++)
-//      {
-//            for (int j = 0; j<LARGEUR; j++)
-//            {
-//                  if (matrice->ecran[i][j] == 'H')
-//                  {
-                        positionHeros.x = matrice->positionHeros.colonne;
-                        positionHeros.y = matrice->positionHeros.ligne;
-                        SDL_BlitSurface(Heros, NULL, ecran, &positionHeros);
-//                  }
-//                  if (matrice->ecran[i][j] == 'M')
-//                  {
-//                        positionMine.x = j;
-//                        positionMine.y = i;
-                        SDL_BlitSurface(mine, NULL, ecran, &positionMine);
-//
-//                  }
-//            }
-//      }
+
+      positionHeros.x = matrice->positionHeros.colonne;
+      positionHeros.y = matrice->positionHeros.ligne;
+      SDL_BlitSurface(Heros, NULL, ecran, &positionHeros);
+      SDL_BlitSurface(mine, NULL, ecran, &positionMine);
+
       SDL_Flip(ecran);
 }
 
@@ -377,7 +367,7 @@ int main ( int argc, char** argv )
             fprintf(stderr,"c'bon fillrect");
       }
 
-      Heros = SDL_LoadBMP("link.bmp");
+      Heros = SDL_LoadBMP("heros_droite.bmp");
       SDL_SetColorKey(Heros, SDL_SRCCOLORKEY, SDL_MapRGB(Heros->format, 255, 0, 0));
       myMap = SDL_LoadBMP("sol4.bmp");
       mine = SDL_LoadBMP("nvMine.bmp");
