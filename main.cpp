@@ -6,7 +6,7 @@
 #define LARGEURHEROSPIXEL 24
 #define HAUTEURHEROSPIXEL 30
 #define LARGEURMINE 20
-#define prout2 30
+
 
 enum {HAUT, BAS, GAUCHE, DROITE};
 char tableau_ecran[HAUTEUR][LARGEUR];
