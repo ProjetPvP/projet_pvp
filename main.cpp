@@ -180,9 +180,19 @@ int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur
       {
             for(int i=0; i<largeur; i++)
             {
-                  if(matrice->ecran[pos.ligne+1][pos.colonne+i] != ' ')
+                  if(matrice->ecran[pos.ligne+hauteur+1][pos.colonne+i] != ' ')
                   {
-                        takedamage(matrice, direction, pos, deplacement, matrice->ecran[pos.ligne+1][pos.colonne+i]);
+                        takedamage(matrice, direction, pos, deplacement, matrice->ecran[pos.ligne+hauteur+1][pos.colonne+i]);
+                  }
+            }
+      }
+      if(direction == HAUT)
+      {
+            for(int i=0; i<largeur; i++)
+            {
+                  if(matrice->ecran[pos.ligne-1][pos.colonne+i] != ' ')
+                  {
+                        takedamage(matrice, direction, pos, deplacement, matrice->ecran[pos.ligne-1][pos.colonne+i]);
                   }
             }
       }
