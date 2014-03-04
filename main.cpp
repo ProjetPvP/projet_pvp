@@ -8,13 +8,28 @@
 #define LARGEURMINE 20
 
 
-enum {HAUT, BAS, GAUCHE, DROITE};
+enum {
+      HAUT,
+      BAS,
+      GAUCHE,
+      DROITE};
 char tableau_ecran[HAUTEUR][LARGEUR];
 
-struct s_pos{int ligne; int colonne;};
+struct s_pos
+{
+      int ligne;
+       int colonne;
+};
 typedef struct s_pos t_pos;
 
-struct s_ecran_de_jeu{char** ecran; int hauteur; int largeur; t_pos positionHeros;};     //creation de la structure qui va former l'écran
+struct s_ecran_de_jeu
+{
+      char** ecran;
+      int hauteur;
+      int largeur;
+      t_pos positionHeros;
+};     //creation de la structure qui va former l'écran
+
 typedef struct s_ecran_de_jeu * t_ecran_de_jeu;
 
 
@@ -24,7 +39,7 @@ typedef struct s_ecran_de_jeu * t_ecran_de_jeu;
 //==========================================================//
 
 
-t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosX, int posHerosY)                              //malloc de la matrice
+t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne, int posHerosLigne)                              //malloc de la matrice
 {
 	t_ecran_de_jeu matrice = (t_ecran_de_jeu)malloc (sizeof(struct s_ecran_de_jeu));
 	matrice->ecran = (char**)malloc(hauteur*sizeof(char*));
@@ -35,8 +50,8 @@ t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosX, int 
 	}
 	matrice->hauteur = hauteur;
 	matrice->largeur = largeur;
-	matrice->positionHeros.ligne = posHerosY;
-	matrice->positionHeros.colonne = posHerosX;
+	matrice->positionHeros.ligne = posHerosLigne;
+	matrice->positionHeros.colonne = posHerosColonne;
 	return matrice;
 }
 
@@ -54,7 +69,6 @@ t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosX, int 
       SDL_Rect positionHeros;
       SDL_Rect positionMap;
       SDL_Rect positionMine;
-      SDL_Rect positionMine2;
       static int cpt = 0;
 
 //==========================================================//
@@ -67,14 +81,12 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
       {
             for (int j = 0; j<LARGEUR; j++)
             {
-                  if (positionHeros.y == j && positionHeros.x == i)
+                  if (matrice->positionHeros.ligne == i && matrice->positionHeros.colonne == j)
                   {
                         matrice->ecran[i][j] = 'H';
                         matrice->ecran[i-40][j-50] = 'M';
-                        positionMine.y = positionHeros.y-40;
-                        positionMine.x = positionHeros.x-50;
-                        positionMine2.y = positionHeros.y-40;
-                        positionMine2.x = positionHeros.x-50;
+                        positionMine.y = matrice->positionHeros.ligne-40;
+                        positionMine.x = matrice->positionHeros.colonne-50;
                         fprintf(stderr, "posx : [%d], posy : [%d]\n", positionMine.x, positionMine.y);
                         fprintf(stderr, "posx : [%d], posy : [%d]\n", positionHeros.x, positionHeros.y);
                   }
@@ -94,26 +106,26 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
 void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran)
 {
       SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-      SDL_BlitSurface(myMap, NULL, ecran, &positionMap);
-      for(int i = 0; i<HAUTEUR; i++)
-      {
-            for (int j = 0; j<LARGEUR; j++)
-            {
-                  if (matrice->ecran[i][j] == 'H')
-                  {
-                        positionHeros.x = i;
-                        positionHeros.y = j;
+      //SDL_BlitSurface(myMap, NULL, ecran, &positionMap);
+//      for(int i = 0; i<HAUTEUR; i++)
+//      {
+//            for (int j = 0; j<LARGEUR; j++)
+//            {
+//                  if (matrice->ecran[i][j] == 'H')
+//                  {
+                        positionHeros.x = matrice->positionHeros.colonne;
+                        positionHeros.y = matrice->positionHeros.ligne;
                         SDL_BlitSurface(Heros, NULL, ecran, &positionHeros);
-                  }
-                  if (matrice->ecran[i][j] == 'M')
-                  {
-                        positionMine.x = j;
-                        positionMine.y = i;
+//                  }
+//                  if (matrice->ecran[i][j] == 'M')
+//                  {
+//                        positionMine.x = j;
+//                        positionMine.y = i;
                         SDL_BlitSurface(mine, NULL, ecran, &positionMine);
-
-                  }
-            }
-      }
+//
+//                  }
+//            }
+//      }
       SDL_Flip(ecran);
 }
 
@@ -127,26 +139,26 @@ void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran)
 
 bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, int deplacement, char c)
 {
-      if (direction == GAUCHE)
-      {
-            if (positionHeros.colonne-1 == 'm' )
-            exit(EXIT_SUCCESS);
-      }
-      else if (direction == DROITE)
-      {
-            if (positionHeros.colonne+1 == 'm' )
-            exit(EXIT_SUCCESS);
-      }
-      else if (direction == HAUT)
-      {
-            if (positionHeros.ligne-1 == 'm' )
-            exit(EXIT_SUCCESS);
-      }
-      else if (direction == BAS)
-      {
-            if (positionHeros.ligne+1 == 'm' )
-            exit(EXIT_SUCCESS);
-      }
+//      if (direction == GAUCHE)
+//      {
+//            if (positionHeros.colonne-1 == 'm' )
+//            exit(EXIT_SUCCESS);
+//      }
+//      else if (direction == DROITE)
+//      {
+//            if (positionHeros.colonne+1 == 'm' )
+//            exit(EXIT_SUCCESS);
+//      }
+//      else if (direction == HAUT)
+//      {
+//            if (positionHeros.ligne-1 == 'm' )
+//            exit(EXIT_SUCCESS);
+//      }
+//      else if (direction == BAS)
+//      {
+//            if (positionHeros.ligne+1 == 'm' )
+//            exit(EXIT_SUCCESS);
+//      }
       exit(EXIT_SUCCESS);
       return false;
 }
@@ -161,7 +173,7 @@ int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur
       {
             for(int i=0; i<hauteur; i++)
             {
-                  if(matrice->ecran[pos.ligne+i][pos.colonne-1] == 'm')
+                  if(matrice->ecran[pos.ligne+i][pos.colonne-1] != ' ')
                   {
                         takedamage(matrice, direction, pos, deplacement, matrice->ecran[pos.ligne+i][pos.colonne-1]);
                   }
@@ -171,7 +183,7 @@ int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur
       {
             for(int i=0; i<hauteur; i++)
             {
-                  if(matrice->ecran[pos.ligne+i][pos.colonne+largeur+1] == 'm')
+                  if(matrice->ecran[pos.ligne+i][pos.colonne+largeur+1] != ' ')
                   {
                         takedamage(matrice, direction, pos, deplacement, matrice->ecran[pos.ligne+i][pos.colonne+largeur+1]);
                   }
@@ -331,6 +343,7 @@ void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb)
                         {
                               cpt2++;
                               fprintf(stderr, "%c", matrice->ecran[i][j]);
+                              fprintf(stderr, "[%d][%d]", i,j);
                         }
                   }
                   if(cpt2 != 0)
@@ -341,7 +354,7 @@ void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb)
             }
       }
       cpt++;
-      verificationDeplacementHitbox(matrice, matrice->positionHeros, LARGEURHEROSPIXEL, HAUTEURHEROSPIXEL, direction, nb);
+      //verificationDeplacementHitbox(matrice, matrice->positionHeros, LARGEURHEROSPIXEL, HAUTEURHEROSPIXEL, direction, nb);
 }
 
 
