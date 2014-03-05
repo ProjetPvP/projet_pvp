@@ -31,25 +31,41 @@ int main ( int argc, char** argv )
       initMatrice(matrice);
       barreVie = SDL_CreateRGBSurface(SDL_HWSURFACE, 600, 50, 32, 0, 0, 0, 0);
       int continuer = 1;
+      //======================================================================//
+      //                            initialisation SDL                        //
+      //======================================================================//
        if (SDL_INIT_VIDEO == -1)
       {
                   fprintf(stderr, "erreur d'initialisation : %s\n", SDL_GetError());
                   exit(EXIT_FAILURE);
       }
 
-      ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_RESIZABLE);
+      ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
 
       if (SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255) == 0))
       {
             fprintf(stderr,"c'bon fillrect");
       }
+      //======================================================================//
+      //                            chargement images                         //
+      //======================================================================//
 
       HerosDroite = SDL_LoadBMP("images/heros_droite.bmp");
       HerosAnimationDroite = SDL_LoadBMP("images/heros_animation_droite.bmp");
       HerosAnimation2Droite = SDL_LoadBMP("images/heros_animation2_droite.bmp");
+
       HerosBas = SDL_LoadBMP("images/heros_bas.bmp");
+      HerosAnimationBas = SDL_LoadBMP("images/heros_animation_gauche.bmp");
+      HerosAnimation2Bas = SDL_LoadBMP("images/heros_animation2_gauche.bmp");
+
       HerosGauche = SDL_LoadBMP("images/heros_gauche.bmp");
+      HerosAnimationGauche = SDL_LoadBMP("images/heros_animation_gauche.bmp");
+      HerosAnimation2Gauche = SDL_LoadBMP("images/heros_animation2_gauche.bmp");
+
       HerosHaut = SDL_LoadBMP("images/heros_haut.bmp");
+      HerosAnimationHaut = SDL_LoadBMP("images/heros_animation_haut.bmp");
+      HerosAnimation2Haut = SDL_LoadBMP("images/heros_animation2_haut.bmp");
+
       myMap = SDL_LoadBMP("sol4.bmp");
       mine = SDL_LoadBMP("nvMine.bmp");
       //======================================================================//
@@ -57,27 +73,37 @@ int main ( int argc, char** argv )
       //======================================================================//
 
 
-      T_Anim animEnCours;
+      T_Anim animEnCours = NULL;
       T_Anim herosDroiteAnim = initialisationAnim(DROITE);
       T_Anim herosGaucheAnim = initialisationAnim(GAUCHE);
       T_Anim herosHautAnim = initialisationAnim(HAUT);
+      T_Anim herosBasAnim = initialisationAnim(BAS);
+      animEnCours = herosBasAnim;
 
 
       //======================================================================//
       //                            setColorKey                               //
       //======================================================================//
       SDL_SetColorKey(HerosHaut, SDL_SRCCOLORKEY, SDL_MapRGB(HerosHaut->format, 255, 0, 0));
+      SDL_SetColorKey(HerosAnimationHaut, SDL_SRCCOLORKEY, SDL_MapRGB(HerosAnimationHaut->format, 255, 0, 0));
+      SDL_SetColorKey(HerosAnimation2Haut, SDL_SRCCOLORKEY, SDL_MapRGB(HerosAnimation2Haut->format, 255, 0, 0));
+
       SDL_SetColorKey(HerosBas, SDL_SRCCOLORKEY, SDL_MapRGB(HerosBas->format, 255, 0, 0));
+      SDL_SetColorKey(HerosAnimationBas, SDL_SRCCOLORKEY, SDL_MapRGB(HerosAnimationHaut->format, 255, 0, 0));
+      SDL_SetColorKey(HerosAnimation2Bas, SDL_SRCCOLORKEY, SDL_MapRGB(HerosAnimation2Haut->format, 255, 0, 0));
+
       SDL_SetColorKey(HerosGauche, SDL_SRCCOLORKEY, SDL_MapRGB(HerosGauche->format, 255, 0, 0));
+      SDL_SetColorKey(HerosAnimationGauche, SDL_SRCCOLORKEY, SDL_MapRGB(HerosAnimationGauche->format, 255, 0, 0));
+      SDL_SetColorKey(HerosAnimation2Gauche, SDL_SRCCOLORKEY, SDL_MapRGB(HerosAnimation2Gauche->format, 255, 0, 0));
+
       SDL_SetColorKey(HerosDroite, SDL_SRCCOLORKEY, SDL_MapRGB(HerosDroite->format, 255, 0, 0));
       SDL_SetColorKey(HerosAnimationDroite, SDL_SRCCOLORKEY, SDL_MapRGB(HerosAnimationDroite->format, 255, 0, 0));
       SDL_SetColorKey(HerosAnimation2Droite, SDL_SRCCOLORKEY, SDL_MapRGB(HerosAnimation2Droite->format, 255, 0, 0));
-      SDL_SetColorKey(HerosDroite, SDL_SRCCOLORKEY, SDL_MapRGB(HerosDroite->format, 255, 0, 0));
-
 
       SDL_SetColorKey(mine, SDL_SRCCOLORKEY, SDL_MapRGB(mine->format, 255, 0, 0));
+
       SDL_Flip(ecran);
-      int direction;
+      int direction = DROITE;
       int nbDeplacement =  1;
       Uint8 *keystates = SDL_GetKeyState( NULL );
       int compteurboucle = 0;
@@ -111,6 +137,7 @@ int main ( int argc, char** argv )
                         {
                               replacementHeros(matrice, BAS, nbDeplacement);
                         }
+                        animEnCours = herosBasAnim;
                         direction = BAS;
                   }
                   if (keystates[SDLK_RIGHT])

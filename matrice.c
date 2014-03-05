@@ -53,14 +53,15 @@ t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne
 T_Anim allocT_Anim()
 {
       T_Anim newAnim = (T_Anim)malloc(sizeof(struct S_Anim));
+      newAnim->current = NULL;
       newAnim->first = NULL;
       return newAnim;
 }
 
-T_Image allocT_Image( SDL_Surface * bla)
+T_Image allocT_Image( SDL_Surface * image)
 {
       T_Image newImage = (T_Image)malloc(sizeof(struct S_Image));
-      newImage->image = bla;
+      newImage->image = image;
       newImage->image_suiv = NULL;
       newImage->position= 0;
       return newImage;
@@ -102,6 +103,7 @@ T_Anim initialisationAnim(int direction)
             newImage4 = allocT_Image(HerosAnimation2Bas);
       }
 
+      newAnim->current = newImage1;
       newAnim->first = newImage1;
       newImage1->image_suiv = newImage2;
       newImage1->position = 1;
@@ -120,6 +122,8 @@ T_Anim initialisationAnim(int direction)
 //==========================================================//
 
       static int cpt = 0;
+      static int verifDirection = NUL;
+      static int cptAnim = 0;
 
 //==========================================================//
 //                     initMatriceVide                      //
@@ -152,35 +156,59 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
       }
 }
 //==========================================================//
-//                    Lecture matrice                       //
+//                    choix de l'anim du héros              //
 //==========================================================//
 SDL_Surface * choixAnimHeros(int direction, T_Anim anim)
 {
+      if(verifDirection != direction){
+          cptAnim = 0;
+      }
+
       if(direction == HAUT)
       {
-            return HerosHaut;
+          cptAnim++;
+          if(cptAnim >30)
+          {
+                anim->current = anim->current->image_suiv;
+                cptAnim = 0;
+          }
+          return anim->current->image;
       }
       else if(direction == BAS)
       {
-            return HerosBas;
+          cptAnim++;
+          if(cptAnim >30)
+          {
+                anim->current = anim->current->image_suiv;
+                cptAnim = 0;
+          }
+          return anim->current->image;
       }
       else if(direction == GAUCHE)
       {
-            return HerosGauche;
+          cptAnim++;
+          if(cptAnim >30)
+          {
+                anim->current = anim->current->image_suiv;
+                cptAnim = 0;
+          }
+          return anim->current->image;
       }
       else if(direction == DROITE)
       {
-            anim->first = anim->first->image_suiv;
-            if(anim->first->image != NULL)
-            {
-                  fprintf(stderr, "c'est pas nul");
-            }
-            return anim->first->image;
+          cptAnim++;
+          if(cptAnim >30)
+          {
+                anim->current = anim->current->image_suiv;
+                cptAnim = 0;
+          }
+          return anim->current->image;
       }
       else
       {
-            return HerosBas;
+          return anim->first->image;
       }
+      verifDirection = direction;
 }
 
 

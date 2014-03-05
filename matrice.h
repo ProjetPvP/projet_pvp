@@ -44,13 +44,20 @@ typedef struct S_Image
 typedef struct S_Anim
 {
  T_Image first;
+ T_Image current;
 } * T_Anim;
 
 SDL_Event event;
 extern SDL_Surface * ecran;
 extern SDL_Surface * HerosHaut;
+extern SDL_Surface * HerosAnimationHaut;
+extern SDL_Surface * HerosAnimation2Haut;
 extern SDL_Surface * HerosBas;
+extern SDL_Surface * HerosAnimationBas;
+extern SDL_Surface * HerosAnimation2Bas;
 extern SDL_Surface * HerosGauche;
+extern SDL_Surface * HerosAnimationGauche;
+extern SDL_Surface * HerosAnimation2Gauche;
 extern SDL_Surface * HerosDroite;
 extern SDL_Surface * HerosAnimationDroite;
 extern SDL_Surface * HerosAnimation2Droite;
