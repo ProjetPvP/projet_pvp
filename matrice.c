@@ -4,12 +4,23 @@
 #include "matrice.h"
 
 SDL_Surface * ecran = NULL;
+
 SDL_Surface * HerosHaut = NULL;
+SDL_Surface * HerosAnimationHaut = NULL;
+SDL_Surface * HerosAnimation2Haut = NULL;
+
 SDL_Surface * HerosBas = NULL;
+SDL_Surface * HerosAnimationBas = NULL;
+SDL_Surface * HerosAnimation2Bas = NULL;
+
 SDL_Surface * HerosGauche = NULL;
+SDL_Surface * HerosAnimationGauche = NULL;
+SDL_Surface * HerosAnimation2Gauche = NULL;
+
 SDL_Surface * HerosDroite = NULL;
 SDL_Surface * HerosAnimationDroite = NULL;
 SDL_Surface * HerosAnimation2Droite = NULL;
+
 SDL_Surface * myMap = NULL;
 SDL_Surface * mine = NULL;
 SDL_Surface * barreVie = NULL;
@@ -46,22 +57,51 @@ T_Anim allocT_Anim()
       return newAnim;
 }
 
-T_Image allocT_Image( SDL_Surface * image)
+T_Image allocT_Image( SDL_Surface * bla)
 {
       T_Image newImage = (T_Image)malloc(sizeof(struct S_Image));
-      newImage->image = image;
+      newImage->image = bla;
       newImage->image_suiv = NULL;
       newImage->position= 0;
       return newImage;
 }
 
-T_Anim initialisationHerosDroite()
+T_Anim initialisationAnim(int direction)
 {
       T_Anim newAnim = allocT_Anim();
-      T_Image newImage1 = allocT_Image(HerosDroite);
-      T_Image newImage2 = allocT_Image(HerosAnimationDroite);
-      T_Image newImage3 = allocT_Image(HerosDroite);
-      T_Image newImage4 = allocT_Image(HerosAnimation2Droite);
+      T_Image newImage1;
+      T_Image newImage2;
+      T_Image newImage3;
+      T_Image newImage4;
+      if(direction == DROITE)
+      {
+            newImage1 = allocT_Image(HerosDroite);
+            newImage2 = allocT_Image(HerosAnimationDroite);
+            newImage3 = allocT_Image(HerosDroite);
+            newImage4 = allocT_Image(HerosAnimation2Droite);
+      }
+      else if(direction == GAUCHE)
+      {
+            newImage1 = allocT_Image(HerosGauche);
+            newImage2 = allocT_Image(HerosAnimationGauche);
+            newImage3 = allocT_Image(HerosGauche);
+            newImage4 = allocT_Image(HerosAnimation2Gauche);
+      }
+      else if(direction == HAUT)
+      {
+            newImage1 = allocT_Image(HerosHaut);
+            newImage2 = allocT_Image(HerosAnimationHaut);
+            newImage3 = allocT_Image(HerosHaut);
+            newImage4 = allocT_Image(HerosAnimation2Haut);
+      }
+      else
+      {
+            newImage1 = allocT_Image(HerosBas);
+            newImage2 = allocT_Image(HerosAnimationBas);
+            newImage3 = allocT_Image(HerosBas);
+            newImage4 = allocT_Image(HerosAnimation2Bas);
+      }
+
       newAnim->first = newImage1;
       newImage1->image_suiv = newImage2;
       newImage1->position = 1;
@@ -73,6 +113,8 @@ T_Anim initialisationHerosDroite()
       newImage4->position = 4;
       return newAnim;
 }
+
+
 //==========================================================//
 //                   variables globales                     //
 //==========================================================//
@@ -99,8 +141,8 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
                         matrice->ecran[i-40][j-50] = 'M';
                         positionMine.y = matrice->positionHeros.ligne-40;
                         positionMine.x = matrice->positionHeros.colonne-50;
-                        fprintf(stderr, "posx : [%d], posy : [%d]\n", positionMine.x, positionMine.y);
-                        fprintf(stderr, "posx : [%d], posy : [%d]\n", positionHeros.x, positionHeros.y);
+//                        fprintf(stderr, "posx : [%d], posy : [%d]\n", positionMine.x, positionMine.y);
+//                        fprintf(stderr, "posx : [%d], posy : [%d]\n", positionHeros.x, positionHeros.y);
                   }
                   else
                   {
@@ -112,7 +154,7 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
 //==========================================================//
 //                    Lecture matrice                       //
 //==========================================================//
-SDL_Surface * choixAnimHeros(int direction)
+SDL_Surface * choixAnimHeros(int direction, T_Anim anim)
 {
       if(direction == HAUT)
       {
@@ -128,7 +170,12 @@ SDL_Surface * choixAnimHeros(int direction)
       }
       else if(direction == DROITE)
       {
-            return HerosDroite;
+            anim->first = anim->first->image_suiv;
+            if(anim->first->image != NULL)
+            {
+                  fprintf(stderr, "c'est pas nul");
+            }
+            return anim->first->image;
       }
       else
       {
@@ -151,13 +198,7 @@ void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  b
 
       positionHeros.x = matrice->positionHeros.colonne;
       positionHeros.y = matrice->positionHeros.ligne;
-      if(direction == DROITE)
-      {
-            SDL_BlitSurface(anim->first->image, NULL, ecran, &positionHeros);
-            anim->first = anim->first->image_suiv;
-      }
-      else
-      SDL_BlitSurface(choixAnimHeros(direction), NULL, ecran, &positionHeros);
+      SDL_BlitSurface(choixAnimHeros(direction, anim), NULL, ecran, &positionHeros);
       SDL_BlitSurface(mine, NULL, ecran, &positionMine);
 
       SDL_Flip(ecran);
@@ -342,24 +383,24 @@ void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb)
                   matrice->ecran[positionMine.y][positionMine.x+i+1] = 'M';
                   matrice->ecran[positionMine.y+LARGEURMINE][positionMine.x+i+1] = 'M';
             }
-            int cpt2 = 0;
-            for(int i=0; i<HAUTEUR; i++)
-            {
-                  for(int j=0; j<LARGEUR; j++)
-                  {
-                        if (matrice->ecran[i][j] != ' ')
-                        {
-                              cpt2++;
-                              fprintf(stderr, "%c", matrice->ecran[i][j]);
-                              fprintf(stderr, "[%d][%d]", i,j);
-                        }
-                  }
-                  if(cpt2 != 0)
-                  {
-                        fprintf(stderr, "\n");
-                  }
-                  cpt2 = 0;
-            }
+//            int cpt2 = 0;
+//            for(int i=0; i<HAUTEUR; i++)
+//            {
+//                  for(int j=0; j<LARGEUR; j++)
+//                  {
+//                        if (matrice->ecran[i][j] != ' ')
+//                        {
+//                              cpt2++;
+//                              fprintf(stderr, "%c", matrice->ecran[i][j]);
+//                              fprintf(stderr, "[%d][%d]", i,j);
+//                        }
+//                  }
+//                  if(cpt2 != 0)
+//                  {
+//                        fprintf(stderr, "\n");
+//                  }
+//                  cpt2 = 0;
+//            }
       }
       cpt++;
       verificationDeplacementHitbox(matrice, matrice->positionHeros, LARGEURHEROSPIXEL, HAUTEURHEROSPIXEL, direction, nb);

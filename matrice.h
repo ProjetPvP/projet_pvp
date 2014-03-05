@@ -13,7 +13,8 @@ enum {
       HAUT,
       BAS,
       GAUCHE,
-      DROITE};
+      DROITE,
+      NUL};
 char tableau_ecran[HAUTEUR][LARGEUR];
 
 struct s_pos
@@ -68,7 +69,7 @@ extern "C"
 #endif
 t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne, int posHerosLigne);
 void initMatrice(t_ecran_de_jeu matrice);
-T_Anim initialisationHerosDroite();
+T_Anim initialisationAnim(int direction);
 void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie, int direction, T_Anim anim);
 bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, int deplacement, char c);
 int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur, int hauteur, int direction, int deplacement);
