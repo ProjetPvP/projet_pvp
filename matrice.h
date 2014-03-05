@@ -33,12 +33,26 @@ struct s_ecran_de_jeu
 
 typedef struct s_ecran_de_jeu * t_ecran_de_jeu;
 
+typedef struct S_Image
+{
+      SDL_Surface* image;
+      struct S_Image* image_suiv;
+      int position;
+} * T_Image;
+
+typedef struct S_Anim
+{
+ T_Image first;
+} * T_Anim;
+
 SDL_Event event;
 extern SDL_Surface * ecran;
 extern SDL_Surface * HerosHaut;
 extern SDL_Surface * HerosBas;
 extern SDL_Surface * HerosGauche;
 extern SDL_Surface * HerosDroite;
+extern SDL_Surface * HerosAnimationDroite;
+extern SDL_Surface * HerosAnimation2Droite;
 extern SDL_Surface * myMap;
 extern SDL_Surface * mine;
 extern SDL_Surface * barreVie;
@@ -54,6 +68,7 @@ extern "C"
 #endif
 t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne, int posHerosLigne);
 void initMatrice(t_ecran_de_jeu matrice);
+T_Anim initialisationHerosDroite();
 void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie, int direction);
 bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, int deplacement, char c);
 int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur, int hauteur, int direction, int deplacement);

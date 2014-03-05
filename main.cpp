@@ -25,6 +25,7 @@ int main ( int argc, char** argv )
       positionMap.y = 0;
       positionBarreVie.x = 0;
       positionBarreVie.y = 0;
+      T_Anim HerosDroite = initialisationHerosDroite();
       t_ecran_de_jeu matrice;
       matrice = create_ecran_de_jeu(HAUTEUR, LARGEUR, positionHeros.x, positionHeros.y);
       initMatrice(matrice);
@@ -44,6 +45,8 @@ int main ( int argc, char** argv )
       }
 
       HerosDroite = SDL_LoadBMP("images/heros_droite.bmp");
+      HerosAnimationDroite = SDL_LoadBMP("images/heros_animation_droite.bmp");
+      HerosAnimation2Droite = SDL_LoadBMP("images/heros_animation2_droite.bmp");
       HerosBas = SDL_LoadBMP("images/heros_bas.bmp");
       HerosGauche = SDL_LoadBMP("images/heros_gauche.bmp");
       HerosHaut = SDL_LoadBMP("images/heros_haut.bmp");
@@ -60,6 +63,7 @@ int main ( int argc, char** argv )
       int direction;
       int nbDeplacement =  1;
       Uint8 *keystates = SDL_GetKeyState( NULL );
+      int compteurboucle = 0;
       while(continuer)
       {
             SDL_PollEvent(&event);
@@ -73,40 +77,46 @@ int main ( int argc, char** argv )
                         default : break;
                   }break;
             }
-
-            if (keystates[SDLK_UP])                                     // les keystats permettent le déplacement en diagonal.
+            if(compteurboucle == 0)
             {
-                  if (verifierPoussee(matrice, HAUT,matrice->positionHeros, nbDeplacement))
+                  if (keystates[SDLK_UP])                                     // les keystats permettent le déplacement en diagonal.
                   {
-                        replacementHeros(matrice, HAUT, nbDeplacement);
+                        if (verifierPoussee(matrice, HAUT,matrice->positionHeros, nbDeplacement))
+                        {
+                              replacementHeros(matrice, HAUT, nbDeplacement);
+                        }
+                        direction = HAUT;
                   }
-                  direction = HAUT;
+                  if (keystates[SDLK_DOWN])
+                  {
+                        if (verifierPoussee(matrice, BAS, matrice->positionHeros, nbDeplacement))
+                        {
+                              replacementHeros(matrice, BAS, nbDeplacement);
+                        }
+                        direction = BAS;
+                  }
+                  if (keystates[SDLK_RIGHT])
+                  {
+                        if (verifierPoussee(matrice, DROITE, matrice->positionHeros, nbDeplacement))
+                        {
+                              replacementHeros(matrice, DROITE, nbDeplacement);
+                        }
+                        direction = DROITE;
+                  }
+                  if (keystates[SDLK_LEFT])
+                  {
+                        if (verifierPoussee(matrice, GAUCHE, matrice->positionHeros, nbDeplacement))
+                        {
+                              replacementHeros(matrice, GAUCHE, nbDeplacement);
+                        }
+                        direction = GAUCHE;
+                  }
             }
-            if (keystates[SDLK_DOWN])
+            if(compteurboucle >3 )
             {
-                  if (verifierPoussee(matrice, BAS, matrice->positionHeros, nbDeplacement))
-                  {
-                        replacementHeros(matrice, BAS, nbDeplacement);
-                  }
-                  direction = BAS;
+                  compteurboucle = 0;
             }
-            if (keystates[SDLK_RIGHT])
-            {
-                  if (verifierPoussee(matrice, DROITE, matrice->positionHeros, nbDeplacement))
-                  {
-                        replacementHeros(matrice, DROITE, nbDeplacement);
-                  }
-                  direction = DROITE;
-            }
-            if (keystates[SDLK_LEFT])
-            {
-                  if (verifierPoussee(matrice, GAUCHE, matrice->positionHeros, nbDeplacement))
-                  {
-                        replacementHeros(matrice, GAUCHE, nbDeplacement);
-                  }
-                  direction = GAUCHE;
-            }
-
+            else compteurboucle++;
 
 
 

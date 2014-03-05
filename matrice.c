@@ -8,6 +8,8 @@ SDL_Surface * HerosHaut = NULL;
 SDL_Surface * HerosBas = NULL;
 SDL_Surface * HerosGauche = NULL;
 SDL_Surface * HerosDroite = NULL;
+SDL_Surface * HerosAnimationDroite = NULL;
+SDL_Surface * HerosAnimation2Droite = NULL;
 SDL_Surface * myMap = NULL;
 SDL_Surface * mine = NULL;
 SDL_Surface * barreVie = NULL;
@@ -33,7 +35,44 @@ t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne
 	return matrice;
 }
 
+//==========================================================//
+//                     malloc structures                    //
+//==========================================================//
 
+T_Anim allocT_Anim()
+{
+      T_Anim newAnim = (T_Anim)malloc(sizeof(struct S_Anim));
+      newAnim->first = NULL;
+      return newAnim;
+}
+
+T_Image allocT_Image( SDL_Surface * image)
+{
+      T_Image newImage = (T_Image)malloc(sizeof(struct S_Image));
+      newImage->image = image;
+      newImage->image_suiv = NULL;
+      newImage->position= 0;
+      return newImage;
+}
+
+T_Anim initialisationHerosDroite()
+{
+      T_Anim newAnim = allocT_Anim();
+      T_Image newImage1 = allocT_Image(HerosDroite);
+      T_Image newImage2 = allocT_Image(HerosAnimationDroite);
+      T_Image newImage3 = allocT_Image(HerosDroite);
+      T_Image newImage4 = allocT_Image(HerosAnimation2Droite);
+      newAnim->first = newImage1;
+      newImage1->image_suiv = newImage2;
+      newImage1->position = 1;
+      newImage2->image_suiv = newImage3;
+      newImage2->position = 2;
+      newImage3->image_suiv = newImage4;
+      newImage3->position = 3;
+      newImage4->image_suiv = newImage1;
+      newImage4->position = 4;
+      return newAnim;
+}
 //==========================================================//
 //                   variables globales                     //
 //==========================================================//
@@ -104,7 +143,7 @@ SDL_Surface * choixAnimHeros(int direction)
 //==========================================================//
 
 
-void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie, int direction)
+void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie, int direction, T_Anim anim)
 {
       SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
       SDL_FillRect(barreVie, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
@@ -112,6 +151,12 @@ void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  b
 
       positionHeros.x = matrice->positionHeros.colonne;
       positionHeros.y = matrice->positionHeros.ligne;
+      if(direction == DROITE)
+      {
+            SDL_BlitSurface(anim->first->image, NULL, ecran, &positionHeros);
+            anim->first = anim->first->image_suiv;
+      }
+      else
       SDL_BlitSurface(choixAnimHeros(direction), NULL, ecran, &positionHeros);
       SDL_BlitSurface(mine, NULL, ecran, &positionMine);
 
