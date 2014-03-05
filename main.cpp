@@ -25,7 +25,7 @@ int main ( int argc, char** argv )
       positionMap.y = 0;
       positionBarreVie.x = 0;
       positionBarreVie.y = 0;
-      T_Anim HerosDroite = initialisationHerosDroite();
+      T_Anim HerosDroiteAnim = initialisationHerosDroite();
       t_ecran_de_jeu matrice;
       matrice = create_ecran_de_jeu(HAUTEUR, LARGEUR, positionHeros.x, positionHeros.y);
       initMatrice(matrice);
@@ -120,7 +120,7 @@ int main ( int argc, char** argv )
 
 
 
-            LectureMatrice(matrice, ecran, barreVie, direction); // Affiche la matrice telle qu'elle est
+            LectureMatrice(matrice, ecran, barreVie, direction, HerosDroiteAnim); // Affiche la matrice telle qu'elle est
       }
 
     return 0;
