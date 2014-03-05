@@ -43,13 +43,21 @@ int main ( int argc, char** argv )
             fprintf(stderr,"c'bon fillrect");
       }
 
-      Heros = SDL_LoadBMP("heros_droite.bmp");
-      SDL_SetColorKey(Heros, SDL_SRCCOLORKEY, SDL_MapRGB(Heros->format, 255, 0, 0));
+      HerosDroite = SDL_LoadBMP("images/heros_droite.bmp");
+      HerosBas = SDL_LoadBMP("images/heros_bas.bmp");
+      HerosGauche = SDL_LoadBMP("images/heros_gauche.bmp");
+      HerosHaut = SDL_LoadBMP("images/heros_haut.bmp");
+
+
+      SDL_SetColorKey(HerosHaut, SDL_SRCCOLORKEY, SDL_MapRGB(HerosHaut->format, 255, 0, 0));
+      SDL_SetColorKey(HerosBas, SDL_SRCCOLORKEY, SDL_MapRGB(HerosBas->format, 255, 0, 0));
+      SDL_SetColorKey(HerosGauche, SDL_SRCCOLORKEY, SDL_MapRGB(HerosGauche->format, 255, 0, 0));
+      SDL_SetColorKey(HerosDroite, SDL_SRCCOLORKEY, SDL_MapRGB(HerosDroite->format, 255, 0, 0));
       myMap = SDL_LoadBMP("sol4.bmp");
       mine = SDL_LoadBMP("nvMine.bmp");
       SDL_SetColorKey(mine, SDL_SRCCOLORKEY, SDL_MapRGB(mine->format, 255, 0, 0));
       SDL_Flip(ecran);
-
+      int direction;
       int nbDeplacement =  1;
       Uint8 *keystates = SDL_GetKeyState( NULL );
       while(continuer)
@@ -72,6 +80,7 @@ int main ( int argc, char** argv )
                   {
                         replacementHeros(matrice, HAUT, nbDeplacement);
                   }
+                  direction = HAUT;
             }
             if (keystates[SDLK_DOWN])
             {
@@ -79,6 +88,7 @@ int main ( int argc, char** argv )
                   {
                         replacementHeros(matrice, BAS, nbDeplacement);
                   }
+                  direction = BAS;
             }
             if (keystates[SDLK_RIGHT])
             {
@@ -86,6 +96,7 @@ int main ( int argc, char** argv )
                   {
                         replacementHeros(matrice, DROITE, nbDeplacement);
                   }
+                  direction = DROITE;
             }
             if (keystates[SDLK_LEFT])
             {
@@ -93,12 +104,13 @@ int main ( int argc, char** argv )
                   {
                         replacementHeros(matrice, GAUCHE, nbDeplacement);
                   }
+                  direction = GAUCHE;
             }
 
 
 
 
-            LectureMatrice(matrice, ecran, barreVie); // Affiche la matrice telle qu'elle est
+            LectureMatrice(matrice, ecran, barreVie, direction); // Affiche la matrice telle qu'elle est
       }
 
     return 0;

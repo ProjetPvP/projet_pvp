@@ -4,7 +4,10 @@
 #include "matrice.h"
 
 SDL_Surface * ecran = NULL;
-SDL_Surface * Heros = NULL;
+SDL_Surface * HerosHaut = NULL;
+SDL_Surface * HerosBas = NULL;
+SDL_Surface * HerosGauche = NULL;
+SDL_Surface * HerosDroite = NULL;
 SDL_Surface * myMap = NULL;
 SDL_Surface * mine = NULL;
 SDL_Surface * barreVie = NULL;
@@ -67,13 +70,41 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
             }
       }
 }
+//==========================================================//
+//                    Lecture matrice                       //
+//==========================================================//
+SDL_Surface * choixAnimHeros(int direction)
+{
+      if(direction == HAUT)
+      {
+            return HerosHaut;
+      }
+      else if(direction == BAS)
+      {
+            return HerosBas;
+      }
+      else if(direction == GAUCHE)
+      {
+            return HerosGauche;
+      }
+      else if(direction == DROITE)
+      {
+            return HerosDroite;
+      }
+      else
+      {
+            return HerosBas;
+      }
+}
+
+
 
 //==========================================================//
 //                    Lecture matrice                       //
 //==========================================================//
 
 
-void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie)
+void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie, int direction)
 {
       SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
       SDL_FillRect(barreVie, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
@@ -81,7 +112,7 @@ void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  b
 
       positionHeros.x = matrice->positionHeros.colonne;
       positionHeros.y = matrice->positionHeros.ligne;
-      SDL_BlitSurface(Heros, NULL, ecran, &positionHeros);
+      SDL_BlitSurface(choixAnimHeros(direction), NULL, ecran, &positionHeros);
       SDL_BlitSurface(mine, NULL, ecran, &positionMine);
 
       SDL_Flip(ecran);
