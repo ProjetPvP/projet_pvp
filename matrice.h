@@ -5,8 +5,8 @@
 #include <stdbool.h>
 #define HAUTEUR 400
 #define LARGEUR 600
-#define LARGEURHEROSPIXEL 34
-#define HAUTEURHEROSPIXEL 34
+#define LARGEURHEROSPIXEL 16
+#define HAUTEURHEROSPIXEL 27
 #define LARGEURMINE 20
 
 enum {
