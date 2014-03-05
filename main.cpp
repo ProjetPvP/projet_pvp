@@ -2,11 +2,7 @@
 #include <SDL/SDL.h>
 #include <stdbool.h>
 #include "matrice.h"
-#define HAUTEUR 400
-#define LARGEUR 600
-#define LARGEURHEROSPIXEL 34
-#define HAUTEURHEROSPIXEL 34
-#define LARGEURMINE 20
+
 
 
 

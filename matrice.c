@@ -1,5 +1,13 @@
+#include <stdlib.h>
+#include <SDL/SDL.h>
+#include <stdbool.h>
 #include "matrice.h"
 
+SDL_Surface * ecran = NULL;
+SDL_Surface * Heros = NULL;
+SDL_Surface * myMap = NULL;
+SDL_Surface * mine = NULL;
+SDL_Surface * barreVie = NULL;
 
 //==========================================================//
 //                     malloc matrice                       //
@@ -68,7 +76,7 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
 void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie)
 {
       SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-      SDL_FillRect(barreVie, NULL, SDL_MapRGB(ecran->format, 0, 0, 255));
+      SDL_FillRect(barreVie, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
       SDL_BlitSurface(barreVie, NULL, ecran, &positionBarreVie);
 
       positionHeros.x = matrice->positionHeros.colonne;
@@ -159,6 +167,7 @@ int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur
                   }
             }
       }
+      return 0;
 }
 
 //==========================================================//

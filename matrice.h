@@ -1,3 +1,5 @@
+#ifndef _MATRICE_H
+#define _MATRICE_H
 #include <stdlib.h>
 #include <SDL/SDL.h>
 #include <stdbool.h>
@@ -32,17 +34,21 @@ struct s_ecran_de_jeu
 typedef struct s_ecran_de_jeu * t_ecran_de_jeu;
 
 SDL_Event event;
-SDL_Surface * ecran = NULL;
-SDL_Surface * Heros = NULL;
-SDL_Surface * myMap = NULL;
-SDL_Surface * mine = NULL;
-SDL_Surface * barreVie = NULL;
+extern SDL_Surface * ecran;
+extern SDL_Surface * Heros;
+extern SDL_Surface * myMap;
+extern SDL_Surface * mine;
+extern SDL_Surface * barreVie;
 
 SDL_Rect positionHeros;
 SDL_Rect positionMap;
 SDL_Rect positionMine;
 SDL_Rect positionBarreVie;
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne, int posHerosLigne);
 void initMatrice(t_ecran_de_jeu matrice);
 void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie);
@@ -51,4 +57,8 @@ int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur
 bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, int deplacement);
 void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb);
 
+#ifdef __cplusplus
+}
+#endif
 
+#endif

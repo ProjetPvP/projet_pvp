@@ -44,6 +44,10 @@
 		</Linker>
 		<Unit filename="cb.bmp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="matrice.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="matrice.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
