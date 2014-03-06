@@ -53,8 +53,8 @@ t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne
 T_Anim allocT_Anim()
 {
       T_Anim newAnim = (T_Anim)malloc(sizeof(struct S_Anim));
-      newAnim->current = NULL;
       newAnim->first = NULL;
+      newAnim->current = NULL;
       return newAnim;
 }
 
@@ -103,8 +103,8 @@ T_Anim initialisationAnim(int direction)
             newImage4 = allocT_Image(HerosAnimation2Bas);
       }
 
-      newAnim->current = newImage1;
       newAnim->first = newImage1;
+      newAnim->current = newImage1;
       newImage1->image_suiv = newImage2;
       newImage1->position = 1;
       newImage2->image_suiv = newImage3;
@@ -122,8 +122,8 @@ T_Anim initialisationAnim(int direction)
 //==========================================================//
 
       static int cpt = 0;
-      static int verifDirection = NUL;
       static int cptAnim = 0;
+      static int verifDirection = NUL;
 
 //==========================================================//
 //                     initMatriceVide                      //
@@ -156,59 +156,31 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
       }
 }
 //==========================================================//
-//                    choix de l'anim du hÈros              //
+//                    Lecture matrice                       //
 //==========================================================//
 SDL_Surface * choixAnimHeros(int direction, T_Anim anim)
 {
-      if(verifDirection != direction){
-          cptAnim = 0;
-      }
+     if(verifDirection != direction){
+          anim->current = anim->first;
+     }
+     SDL_Surface* animTemp = anim->current->image;
 
-      if(direction == HAUT)
+
+
+     if(direction == BAS)
       {
-          cptAnim++;
-          if(cptAnim >30)
-          {
-                anim->current = anim->current->image_suiv;
-                cptAnim = 0;
-          }
-          return anim->current->image;
+          //cptAnim++;
+       //   anim->current = anim->current->image_suiv;
+          return HerosBas;
       }
-      else if(direction == BAS)
-      {
-          cptAnim++;
-          if(cptAnim >30)
-          {
-                anim->current = anim->current->image_suiv;
-                cptAnim = 0;
-          }
-          return anim->current->image;
-      }
-      else if(direction == GAUCHE)
-      {
-          cptAnim++;
-          if(cptAnim >30)
-          {
-                anim->current = anim->current->image_suiv;
-                cptAnim = 0;
-          }
-          return anim->current->image;
-      }
-      else if(direction == DROITE)
-      {
-          cptAnim++;
-          if(cptAnim >30)
-          {
-                anim->current = anim->current->image_suiv;
-                cptAnim = 0;
-          }
-          return anim->current->image;
-      }
-      else
+      else if(direction == NUL)
       {
           return anim->first->image;
       }
+      anim->current = anim->current->image_suiv;
       verifDirection = direction;
+      return animTemp;
+
 }
 
 
@@ -268,7 +240,7 @@ bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, int 
 
 
 //==========================================================//
-//                      crÈation hitbox                     //
+//                      cr√©ation hitbox                     //
 //==========================================================//
 int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur, int hauteur, int direction, int deplacement)
 {
@@ -316,7 +288,7 @@ int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur
 }
 
 //==========================================================//
-//                      vÈrifier poussee                    //
+//                      v√©rifier poussee                    //
 //==========================================================//
 
 bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, int deplacement)
@@ -334,8 +306,8 @@ bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros,
       }
       else if (direction == DROITE)
       {
-            if (positionHeros.colonne > LARGEUR-2-deplacement-LARGEURHEROSPIXEL)            // parce que la matrice est dÈfinie sur [0-(LARGEUR-1)][0-(HAUTEUR-1)]
-            {                                                                               // LARGEURHEROSPIXEL pour pas que le heros dÈpasse l'Ècran
+            if (positionHeros.colonne > LARGEUR-2-deplacement-LARGEURHEROSPIXEL)            // parce que la matrice est d√©finie sur [0-(LARGEUR-1)][0-(HAUTEUR-1)]
+            {                                                                               // LARGEURHEROSPIXEL pour pas que le heros d√©passe l'√©cran
                   return false;
             }
             else if (matrice->ecran[positionHeros.ligne][positionHeros.colonne+1] == ' ')
@@ -356,7 +328,7 @@ bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros,
       }
       else if (direction == BAS)
       {
-            if (positionHeros.ligne > HAUTEUR -2-deplacement-HAUTEURHEROSPIXEL)                 // HAUTEURHEROSPIXEL pour pas que le heros dÈpasse l'Ècran
+            if (positionHeros.ligne > HAUTEUR -2-deplacement-HAUTEURHEROSPIXEL)                 // HAUTEURHEROSPIXEL pour pas que le heros d√©passe l'√©cran
             {
                   return false;
             }
