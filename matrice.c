@@ -167,13 +167,14 @@ SDL_Surface * choixAnimHeros(int direction, T_Anim anim)
 
 
 
-     if(direction == BAS)
-      {
-          //cptAnim++;
-       //   anim->current = anim->current->image_suiv;
-          return HerosBas;
-      }
-      else if(direction == NUL)
+//     if(direction == BAS)
+//      {
+//          cptAnim++;
+//          anim->current = anim->current->image_suiv;
+//          return HerosBas;
+//      }
+//      else
+      if(direction == NUL)
       {
           return anim->first->image;
       }

@@ -44,22 +44,24 @@ int main ( int argc, char** argv )
             fprintf(stderr,"c'bon fillrect");
       }
 
-     HerosDroite = SDL_LoadBMP("images/heros_droite.bmp");
-     HerosAnimationDroite = SDL_LoadBMP("images/heros_animation_droite.bmp");
-     HerosAnimation2Droite = SDL_LoadBMP("images/heros_animation2_droite.bmp");
+      HerosDroite = SDL_LoadBMP("images/heros_droite.bmp");
+      HerosAnimationDroite = SDL_LoadBMP("images/heros_animation_droite.bmp");
+      HerosAnimation2Droite = SDL_LoadBMP("images/heros_animation2_droite.bmp");
 
-     HerosBas = SDL_LoadBMP("images/heros_bas.bmp");
+      HerosBas = SDL_LoadBMP("images/heros_bas.bmp");
+      HerosAnimationBas = SDL_LoadBMP("images/heros_animation_bas.bmp");
+      HerosAnimation2Bas= SDL_LoadBMP("images/heros_animation2_bas.bmp");
 
-     HerosGauche = SDL_LoadBMP("images/heros_gauche.bmp");
-     HerosAnimationGauche = SDL_LoadBMP("images/heros_animation_gauche.bmp");
-     HerosAnimation2Gauche = SDL_LoadBMP("images/heros_animation2_gauche.bmp");
+      HerosGauche = SDL_LoadBMP("images/heros_gauche.bmp");
+      HerosAnimationGauche = SDL_LoadBMP("images/heros_animation_gauche.bmp");
+      HerosAnimation2Gauche = SDL_LoadBMP("images/heros_animation2_gauche.bmp");
 
-     HerosHaut = SDL_LoadBMP("images/heros_haut.bmp");
-     HerosAnimationHaut = SDL_LoadBMP("images/heros_animation_haut.bmp");
-     HerosAnimation2Haut = SDL_LoadBMP("images/heros_animation2_haut.bmp");
+      HerosHaut = SDL_LoadBMP("images/heros_haut.bmp");
+      HerosAnimationHaut = SDL_LoadBMP("images/heros_animation_haut.bmp");
+      HerosAnimation2Haut = SDL_LoadBMP("images/heros_animation2_haut.bmp");
 
-     myMap = SDL_LoadBMP("sol4.bmp");
-     mine = SDL_LoadBMP("nvMine.bmp");
+      myMap = SDL_LoadBMP("sol4.bmp");
+      mine = SDL_LoadBMP("nvMine.bmp");
       //======================================================================//
       //                            création T_anim                           //
       //======================================================================//
@@ -69,6 +71,7 @@ int main ( int argc, char** argv )
       T_Anim herosDroiteAnim = initialisationAnim(DROITE);
       T_Anim herosGaucheAnim = initialisationAnim(GAUCHE);
       T_Anim herosHautAnim = initialisationAnim(HAUT);
+      T_Anim herosBasAnim = initialisationAnim(BAS);
 
 
       //======================================================================//
@@ -87,6 +90,8 @@ int main ( int argc, char** argv )
       SDL_SetColorKey(HerosAnimation2Droite, SDL_SRCCOLORKEY, SDL_MapRGB(HerosAnimation2Droite->format, 255, 0, 0));
 
       SDL_SetColorKey(HerosBas, SDL_SRCCOLORKEY, SDL_MapRGB(HerosBas->format, 255, 0, 0));
+      SDL_SetColorKey(HerosAnimationBas, SDL_SRCCOLORKEY, SDL_MapRGB(HerosAnimationBas->format, 255, 0, 0));
+      SDL_SetColorKey(HerosAnimation2Bas, SDL_SRCCOLORKEY, SDL_MapRGB(HerosAnimation2Bas->format, 255, 0, 0));
 
       SDL_SetColorKey(mine, SDL_SRCCOLORKEY, SDL_MapRGB(mine->format, 255, 0, 0));
       SDL_Flip(ecran);
@@ -121,15 +126,16 @@ int main ( int argc, char** argv )
                         animEnCours = herosHautAnim;
                         direction = HAUT;
                   }
-                  else if (keystates[SDLK_DOWN])
+                  if (keystates[SDLK_DOWN])
                   {
                         if (verifierPoussee(matrice, BAS, matrice->positionHeros, nbDeplacement))
                         {
                               replacementHeros(matrice, BAS, nbDeplacement);
                         }
                         direction = BAS;
+                        animEnCours = herosBasAnim;
                   }
-                  else if (keystates[SDLK_RIGHT])
+                  if (keystates[SDLK_RIGHT])
                   {
                         if (verifierPoussee(matrice, DROITE, matrice->positionHeros, nbDeplacement))
                         {
@@ -138,7 +144,7 @@ int main ( int argc, char** argv )
                         animEnCours = herosDroiteAnim;
                         direction = DROITE;
                   }
-                  else if (keystates[SDLK_LEFT])
+                  if (keystates[SDLK_LEFT])
                   {
                         if (verifierPoussee(matrice, GAUCHE, matrice->positionHeros, nbDeplacement))
                         {
@@ -149,7 +155,7 @@ int main ( int argc, char** argv )
                   }
 
                }
-            SDL_Delay(8);
+            SDL_Delay(3);
 
 
             LectureMatrice(matrice, ecran, barreVie, direction, animEnCours);
