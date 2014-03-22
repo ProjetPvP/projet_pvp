@@ -23,6 +23,7 @@ SDL_Surface * HerosAnimation2Droite = NULL;
 
 SDL_Surface * myMap = NULL;
 SDL_Surface * mine = NULL;
+SDL_Surface * barreHaut = NULL;
 SDL_Surface * barreVie = NULL;
 
 //==========================================================//
@@ -126,6 +127,20 @@ T_Anim initialisationAnim(int direction)
       static int verifDirection = NUL;
 
 //==========================================================//
+//                     Affiche barre vie                    //
+//==========================================================//
+
+void afficheBarreVie(T_Heros heros, SDL_Surface* ecran)
+{
+      positionBarreVie.h = 20;
+      positionBarreVie.w = heros->vie;
+      barreVie = SDL_CreateRGBSurface(SDL_HWSURFACE, heros->vie*2, 20, 32, 0, 0, 0, 0);
+      SDL_FillRect(barreVie, NULL, SDL_MapRGB(ecran->format, 255, 0, 0));
+      SDL_BlitSurface(barreVie, NULL, ecran, &positionBarreVie);
+}
+
+
+//==========================================================//
 //                     initMatriceVide                      //
 //==========================================================//
 
@@ -145,8 +160,6 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
                         matrice->ecran[i-40][j-50] = 'M';
                         positionMine.y = matrice->positionHeros.ligne-40;
                         positionMine.x = matrice->positionHeros.colonne-50;
-//                        fprintf(stderr, "posx : [%d], posy : [%d]\n", positionMine.x, positionMine.y);
-//                        fprintf(stderr, "posx : [%d], posy : [%d]\n", positionHeros.x, positionHeros.y);
                   }
                   else
                   {
@@ -164,16 +177,6 @@ SDL_Surface * choixAnimHeros(int direction, T_Anim anim)
           anim->current = anim->first;
      }
      SDL_Surface* animTemp = anim->current->image;
-
-
-
-//     if(direction == BAS)
-//      {
-//          cptAnim++;
-//          anim->current = anim->current->image_suiv;
-//          return HerosBas;
-//      }
-//      else
       if(direction == NUL)
       {
           return anim->first->image;
@@ -191,11 +194,12 @@ SDL_Surface * choixAnimHeros(int direction, T_Anim anim)
 //==========================================================//
 
 
-void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie, int direction, T_Anim anim)
+void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie, int direction, T_Anim anim, T_Heros heros)
 {
       SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-      SDL_FillRect(barreVie, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
-      SDL_BlitSurface(barreVie, NULL, ecran, &positionBarreVie);
+      SDL_FillRect(barreHaut, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
+      SDL_BlitSurface(barreHaut, NULL, ecran, &positionBarreHaut);
+      afficheBarreVie(heros, ecran);
 
       positionHeros.x = matrice->positionHeros.colonne;
       positionHeros.y = matrice->positionHeros.ligne;
@@ -208,50 +212,92 @@ void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  b
 
 
 
-//==========================================================//
-//                      takedamage                          //
-//==========================================================//
-
-
-bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, int deplacement, char c)
+bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_Heros heros, int largeur, int hauteur)
 {
-//      if (direction == GAUCHE)
-//      {
-//            if (positionHeros.colonne-1 == 'm' )
-//            exit(EXIT_SUCCESS);
-//      }
-//      else if (direction == DROITE)
-//      {
-//            if (positionHeros.colonne+1 == 'm' )
-//            exit(EXIT_SUCCESS);
-//      }
-//      else if (direction == HAUT)
-//      {
-//            if (positionHeros.ligne-1 == 'm' )
-//            exit(EXIT_SUCCESS);
-//      }
-//      else if (direction == BAS)
-//      {
-//            if (positionHeros.ligne+1 == 'm' )
-//            exit(EXIT_SUCCESS);
-//      }
-      exit(EXIT_SUCCESS);
-      return false;
-}
+      bool damagetaken = false;
+      heros->vie -= 5;
+      fprintf(stderr,"%d \n", heros->vie);
+      if(heros->vie <= 0)
+      {
+       exit(EXIT_SUCCESS);
+      }
+     else
+     {
+          if(direction == GAUCHE)
+          {
+               for(int i=0; i<hauteur; i++)
+               {
+                    if(matrice->ecran[positionHeros.ligne+i][positionHeros.colonne-1] != ' ')
+                    {
+                         damagetaken = true;
+                    }
+               }
+               if(damagetaken == true)
+               {
 
+                    matrice->positionHeros.colonne += 20;
+               }
+          }
+          else if(direction == DROITE)
+          {
+               for(int i=0; i<hauteur; i++)
+               {
+                    if(matrice->ecran[positionHeros.ligne+i][positionHeros.colonne+largeur+1] != ' ')
+                    {
+                         damagetaken = true;
+                    }
+               }
+               if(damagetaken == true)
+               {
+                    matrice->positionHeros.colonne -= 20;
+               }
+          }
+          else if(direction == BAS)
+          {
+               for(int i=0; i<largeur; i++)
+               {
+                    if(matrice->ecran[positionHeros.ligne+hauteur+1][positionHeros.colonne+i] != ' ')
+                    {
+                         damagetaken = true;
+                    }
+               }
+               if(damagetaken == true)
+               {
+                    matrice->positionHeros.ligne -= 20;
+               }
+          }
+          else if(direction == HAUT)
+          {
+               for(int i=0; i<largeur; i++)
+               {
+                    if(matrice->ecran[positionHeros.ligne-1][positionHeros.colonne+i] != ' ')
+                    {
+                         damagetaken = true;
+                    }
+               }
+               if(damagetaken == true)
+               {
+                    matrice->positionHeros.ligne += 20;
+               }
+          }
+     }
+     return false;
+}
 
 //==========================================================//
 //                      création hitbox                     //
 //==========================================================//
-int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur, int hauteur, int direction, int deplacement)
+int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur, int hauteur, int direction, int deplacement, T_Heros heros)
 {
+      bool damagetaken = false;
+
       if(direction == GAUCHE)
       {
             for(int i=0; i<hauteur; i++)
             {
                   if(matrice->ecran[pos.ligne+i][pos.colonne-1] != ' ')
                   {
-                        takedamage(matrice, direction, pos, deplacement, matrice->ecran[pos.ligne+i][pos.colonne-1]);
+                              damagetaken = true;
                   }
             }
       }
@@ -261,7 +307,7 @@ int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur
             {
                   if(matrice->ecran[pos.ligne+i][pos.colonne+largeur+1] != ' ')
                   {
-                        takedamage(matrice, direction, pos, deplacement, matrice->ecran[pos.ligne+i][pos.colonne+largeur+1]);
+                              damagetaken = true;
                   }
             }
       }
@@ -271,7 +317,7 @@ int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur
             {
                   if(matrice->ecran[pos.ligne+hauteur+1][pos.colonne+i] != ' ')
                   {
-                        takedamage(matrice, direction, pos, deplacement, matrice->ecran[pos.ligne+hauteur+1][pos.colonne+i]);
+                              damagetaken = true;
                   }
             }
       }
@@ -281,9 +327,14 @@ int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur
             {
                   if(matrice->ecran[pos.ligne-1][pos.colonne+i] != ' ')
                   {
-                        takedamage(matrice, direction, pos, deplacement, matrice->ecran[pos.ligne-1][pos.colonne+i]);
+                       damagetaken = true;
+
                   }
             }
+      }
+      if(damagetaken)
+      {
+            takedamage(matrice, direction,  pos, heros, largeur, hauteur);
       }
       return 0;
 }
@@ -342,7 +393,7 @@ bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros,
       return false;
 }
 
-void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb)
+void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros heros)
 {
       if (direction == BAS)
       {
@@ -404,5 +455,5 @@ void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb)
 //            }
       }
       cpt++;
-      verificationDeplacementHitbox(matrice, matrice->positionHeros, LARGEURHEROSPIXEL, HAUTEURHEROSPIXEL, direction, nb);
+      verificationDeplacementHitbox(matrice, matrice->positionHeros, LARGEURHEROSPIXEL, HAUTEURHEROSPIXEL, direction, nb, heros);
 }

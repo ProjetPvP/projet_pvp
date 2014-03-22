@@ -35,7 +35,7 @@ T_Heros allocHeros(char* nomHeros, char* nomMap)
       strcpy(newHeros->nom, nomHeros);
       newHeros->mapActuelle = (char*)malloc(strlen(nomMap)*sizeof(char));
       strcpy(newHeros->mapActuelle, nomMap);
-      newHeros->vie = 20;
+      newHeros->vie = 200;
       newHeros->inventaire = NULL;
       return newHeros;
 }

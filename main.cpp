@@ -2,7 +2,7 @@
 #include <SDL/SDL.h>
 #include <stdbool.h>
 #include "matrice.h"
-
+#include "heros.h"
 
 
 
@@ -23,13 +23,15 @@ int main ( int argc, char** argv )
       positionHeros.y = 300;
       positionMap.x = 0;
       positionMap.y = 0;
-      positionBarreVie.x = 0;
-      positionBarreVie.y = 0;
+      positionBarreHaut.x = 0;
+      positionBarreHaut.y = 0;
+      positionBarreVie.x = 20;
+      positionBarreVie.y = 10;
 
       t_ecran_de_jeu matrice;
       matrice = create_ecran_de_jeu(HAUTEUR, LARGEUR, positionHeros.x, positionHeros.y);
       initMatrice(matrice);
-      barreVie = SDL_CreateRGBSurface(SDL_HWSURFACE, 600, 50, 32, 0, 0, 0, 0);
+      barreHaut = SDL_CreateRGBSurface(SDL_HWSURFACE, 600, 50, 32, 0, 0, 0, 0);
       int continuer = 1;
        if (SDL_INIT_VIDEO == -1)
       {
@@ -95,6 +97,11 @@ int main ( int argc, char** argv )
 
       SDL_SetColorKey(mine, SDL_SRCCOLORKEY, SDL_MapRGB(mine->format, 255, 0, 0));
       SDL_Flip(ecran);
+
+
+      T_Heros heros = allocHeros("TestHeros", "sol4.bmp");
+
+
       int direction = NUL;
       int nbDeplacement =  1;
       Uint8 *keystates = SDL_GetKeyState( NULL );
@@ -121,7 +128,7 @@ int main ( int argc, char** argv )
                   {
                         if (verifierPoussee(matrice, HAUT,matrice->positionHeros, nbDeplacement))
                         {
-                              replacementHeros(matrice, HAUT, nbDeplacement);
+                              replacementHeros(matrice, HAUT, nbDeplacement, heros);
                         }
                         animEnCours = herosHautAnim;
                         direction = HAUT;
@@ -130,7 +137,7 @@ int main ( int argc, char** argv )
                   {
                         if (verifierPoussee(matrice, BAS, matrice->positionHeros, nbDeplacement))
                         {
-                              replacementHeros(matrice, BAS, nbDeplacement);
+                              replacementHeros(matrice, BAS, nbDeplacement, heros);
                         }
                         direction = BAS;
                         animEnCours = herosBasAnim;
@@ -139,7 +146,7 @@ int main ( int argc, char** argv )
                   {
                         if (verifierPoussee(matrice, DROITE, matrice->positionHeros, nbDeplacement))
                         {
-                              replacementHeros(matrice, DROITE, nbDeplacement);
+                              replacementHeros(matrice, DROITE, nbDeplacement, heros);
                         }
                         animEnCours = herosDroiteAnim;
                         direction = DROITE;
@@ -148,7 +155,7 @@ int main ( int argc, char** argv )
                   {
                         if (verifierPoussee(matrice, GAUCHE, matrice->positionHeros, nbDeplacement))
                         {
-                              replacementHeros(matrice, GAUCHE, nbDeplacement);
+                              replacementHeros(matrice, GAUCHE, nbDeplacement, heros);
                         }
                         animEnCours = herosGaucheAnim;
                         direction = GAUCHE;
@@ -158,7 +165,7 @@ int main ( int argc, char** argv )
             SDL_Delay(3);
 
 
-            LectureMatrice(matrice, ecran, barreVie, direction, animEnCours);
+            LectureMatrice(matrice, ecran, barreHaut, direction, animEnCours, heros);
              direction = NUL;// Affiche la matrice telle qu'elle est
       }
 

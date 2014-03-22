@@ -34,27 +34,17 @@ typedef struct S_Heros * T_Heros;
 
 
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
+T_Objet allocObjet(char* nomObjet, int tailleNom, SDL_Surface* image, char* typeObjet, int tailleType);
+T_Inventaire allocInventaire();
+T_Heros allocHeros(char* nomHeros, char* nomMap);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif
