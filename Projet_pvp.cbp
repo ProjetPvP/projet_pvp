@@ -43,6 +43,10 @@
 			<Add directory="C:/Users/Olivier/Desktop/projet prog/projet_pvp/SDL-1.2.15/lib" />
 		</Linker>
 		<Unit filename="cb.bmp" />
+		<Unit filename="heros.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="heros.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="matrice.c">
 			<Option compilerVar="CC" />
