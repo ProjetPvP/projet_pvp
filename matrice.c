@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <SDL/SDL.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include "matrice.h"
 
 SDL_Surface * ecran = NULL;
@@ -26,6 +27,7 @@ SDL_Surface * mine = NULL;
 SDL_Surface * barreHaut = NULL;
 SDL_Surface * barreVie = NULL;
 
+
 //==========================================================//
 //                     malloc matrice                       //
 //==========================================================//
@@ -40,6 +42,10 @@ t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne
 	{
 		matrice->ecran[i]=(char*)malloc(largeur*sizeof(char));
 	}
+	matrice->nord = NULL;
+	matrice->sud = NULL;
+	matrice->est = NULL;
+	matrice->ouest = NULL;
 	matrice->hauteur = hauteur;
 	matrice->largeur = largeur;
 	matrice->positionHeros.ligne = posHerosLigne;
@@ -123,7 +129,6 @@ T_Anim initialisationAnim(int direction)
 //==========================================================//
 
       static int cpt = 0;
-      static int cptAnim = 0;
       static int verifDirection = NUL;
 
 //==========================================================//
@@ -141,7 +146,75 @@ void afficheBarreVie(T_Heros heros, SDL_Surface* ecran)
 
 
 //==========================================================//
-//                     initMatriceVide                      //
+//                     ChargementFichier                    //
+//==========================================================//
+t_ecran_de_jeu chargementFichier(char* nomFichier)
+{
+      char nord[1024];
+      char sud[1024];
+      char est[1024];
+      char ouest[1024];
+      char ligne[1024];
+      t_ecran_de_jeu matrice = create_ecran_de_jeu(HAUTEUR, LARGEUR, positionHeros.x, positionHeros.y);
+
+      FILE* fichier = fopen(nomFichier, "r");
+      fgets(nord, 1024, fichier);
+      fprintf(stderr, "%s\n", nord);
+      fgets(sud, 1024, fichier);
+      fgets(est, 1024, fichier);
+      fgets(ouest, 1024, fichier);
+      int cptLigneimpaires = 1;
+      int cptCoordonnees = 0;
+      char c;
+      int y;
+      int x;
+      while(fgets(ligne, 1024, fichier) != NULL)
+      {
+            if(cptLigneimpaires % 2 != 0)
+            {
+                  c = ligne[0];
+                  cptLigneimpaires++;
+            }
+            else
+            {
+                  if(cptCoordonnees == 0)
+                  {
+                        y = strtol(ligne, NULL, 10);
+                        cptCoordonnees++;
+                  }
+                  else
+                  {
+                        x = strtol(ligne, NULL, 10);
+                        cptCoordonnees++;
+                  }
+            cptLigneimpaires++;
+            }
+            if (cptCoordonnees == 2)
+            {
+                  matrice->ecran[y][x] = c;
+                  cptCoordonnees = 0;
+            }
+      }
+//      fprintf(stderr, "%s, %s, %s, %s\n", nord, sud, est, ouest);
+//      for(int i=0; i<HAUTEUR; i++)
+//      {
+//            for(int j=0; j<LARGEUR; j++)
+//            {
+//                  if (matrice->ecran[i][j] != ' ')
+//                  {
+//                        fprintf(stderr, "[%c : |%d| |%d|]\n", matrice->ecran[i][j], i, j);
+//                  }
+//            }
+//      }
+      fclose(fichier);
+return matrice;
+
+}
+
+
+
+//==========================================================//
+//                    initMatriceVide                       //
 //==========================================================//
 
 void initMatrice(t_ecran_de_jeu matrice)                                                     //initialisation de la matrice
@@ -212,7 +285,7 @@ void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  b
 
 
 
-bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_Heros heros, int largeur, int hauteur)
+int takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_Heros heros, int largeur, int hauteur)
 {
       bool damagetaken = false;
       heros->vie -= 5;
@@ -234,8 +307,11 @@ bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_He
                }
                if(damagetaken == true)
                {
-
-                    matrice->positionHeros.colonne += 20;
+                  for(int i=0; i<20; i++)
+                  {
+                    matrice->positionHeros.colonne += 1;
+                    SDL_Delay(7);
+                  }
                }
           }
           else if(direction == DROITE)
@@ -249,7 +325,11 @@ bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_He
                }
                if(damagetaken == true)
                {
-                    matrice->positionHeros.colonne -= 20;
+                  for(int i=0; i<20; i++)
+                  {
+                    matrice->positionHeros.colonne -= 1;
+                    SDL_Delay(7);
+                  }
                }
           }
           else if(direction == BAS)
@@ -263,7 +343,11 @@ bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_He
                }
                if(damagetaken == true)
                {
-                    matrice->positionHeros.ligne -= 20;
+                  for(int i=0; i<20; i++)
+                  {
+                    matrice->positionHeros.ligne -= 1;
+                    SDL_Delay(7);
+                  }
                }
           }
           else if(direction == HAUT)
@@ -277,11 +361,15 @@ bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_He
                }
                if(damagetaken == true)
                {
-                    matrice->positionHeros.ligne += 20;
+                  for(int i=0; i<20; i++)
+                  {
+                    matrice->positionHeros.ligne += 1;
+                    SDL_Delay(7);
+                  }
                }
           }
      }
-     return false;
+     return 3;
 }
 
 //==========================================================//
@@ -334,7 +422,7 @@ int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur
       }
       if(damagetaken)
       {
-            takedamage(matrice, direction,  pos, heros, largeur, hauteur);
+            return takedamage(matrice, direction,  pos, heros, largeur, hauteur);
       }
       return 0;
 }
@@ -393,7 +481,7 @@ bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros,
       return false;
 }
 
-void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros heros)
+int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros heros)
 {
       if (direction == BAS)
       {
@@ -455,5 +543,5 @@ void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros her
 //            }
       }
       cpt++;
-      verificationDeplacementHitbox(matrice, matrice->positionHeros, LARGEURHEROSPIXEL, HAUTEURHEROSPIXEL, direction, nb, heros);
+      return verificationDeplacementHitbox(matrice, matrice->positionHeros, LARGEURHEROSPIXEL, HAUTEURHEROSPIXEL, direction, nb, heros);
 }

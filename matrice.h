@@ -34,6 +34,10 @@ struct s_ecran_de_jeu
       char** ecran;
       int hauteur;
       int largeur;
+      char* nord;
+      char* sud;
+      char* est;
+      char* ouest;
       t_pos positionHeros;
 };     //creation de la structure qui va former l'écran
 
@@ -84,12 +88,13 @@ extern "C"
 
 t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne, int posHerosLigne);
 void initMatrice(t_ecran_de_jeu matrice);
+t_ecran_de_jeu chargementFichier(char* nomFichier);
 T_Anim initialisationAnim(int direction);
 void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie, int direction, T_Anim anim, T_Heros heros);
-bool takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_Heros heros, int largeur, int hauteur);
+int takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_Heros heros, int largeur, int hauteur);
 int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur, int hauteur, int direction, int deplacement, T_Heros heros);
 bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, int deplacement);
-void replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros heros);
+int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros heros);
 
 #ifdef __cplusplus
 }
