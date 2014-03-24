@@ -42,12 +42,12 @@ SDL_Surface * rocher = NULL;
       {
             int numero;
             SDL_Rect position;
-            T_ListePosition suiv;
-            T_ListePosition prec;
+            struct S_ListePosition* suiv;
+            struct S_ListePosition* prec;
       };
 typedef struct S_ListePosition * T_ListePosition;
-      static T_ListePosition ListeArbre;
-      static T_ListePosition ListeRocher;
+      static T_ListePosition ListeArbre = NULL;
+      static T_ListePosition ListeRocher = NULL;
 
 
 
@@ -294,6 +294,14 @@ char* replaceString(char* string)
       strTmp[strlen(string)-1] = '\0';
       return strTmp;
 }
+void debutListe(T_ListePosition liste)
+{
+      while(liste != NULL && liste->prec != NULL)
+      {
+            liste = liste->prec;
+      }
+}
+
 
 //==========================================================//
 //                     ChargementFichier                    //
@@ -378,11 +386,14 @@ t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros)
       {
             fprintf(stderr,"ERREUR LORS DE L'OUVERTURE DU FICHIER" );
       }
-      while(ListeArbre->prec != NULL)
-      {
-            ListeArbre = ListeArbre->prec;
-      }
-      fprintf(stderr, "nombrearbre : [%d]\n", ListeArbre->numero);
+//      while(ListeArbre != NULL && ListeArbre->prec != NULL)
+//      {
+//            ListeArbre = ListeArbre->prec;
+//      }
+
+      debutListe(ListeArbre);
+      //fprintf(stderr, "listearbre  %d", ListeArbre->numero);
+      //debutListe(ListeRocher);
       fclose(fichier);
 return matrice;
 
@@ -628,35 +639,46 @@ bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros,
       }
       return false;
 }
-
+int compteurListe(T_ListePosition liste)
+{
+      int numero;
+      fprintf(stderr, "on est dans compteurliste\n");
+      if(liste != NULL)
+      {
+            T_ListePosition tmp = liste;
+            while (tmp->suiv != NULL)
+            {
+                  tmp = tmp->suiv;
+            }
+            numero = tmp->numero;
+            fprintf(stderr, "numero : %d\n", numero);
+            return numero;
+      }
+      else return 0;
+}
 void ajoutHitbox(T_ListePosition liste, SDL_Rect position, t_ecran_de_jeu matrice, int hauteur, int largeur, char c)
 {
-            int cpt;
-            while(liste->suiv != NULL)
-            {
-                  liste = liste->suiv;
-            }
-            cpt = liste->numero;
-            while(liste->prec != NULL)
-            {
-                  liste = liste->prec;
-            }
-      for(int numeroObjet = 0; numeroObjet<cpt; numeroObjet++)
-            {
-                  position.x = liste->position.x;
-                  position.y = liste->position.y;
-                  liste = liste->suiv;
-                  for(int i=0; i<largeur; i++)
+      if(liste != NULL)
+      {
+            int numero = compteurListe(liste);
+            for(int numeroObjet = 0; numeroObjet<numero; numeroObjet++)
                   {
-                        matrice->ecran[position.y][position.x+i+1] = tolower(c);
-                        matrice->ecran[position.y+hauteur][position.x+i+1] = tolower(c);
+                        position.x = liste->position.x;
+                        position.y = liste->position.y;
+                        fprintf(stderr, "ajoutHitbox %d%d\n",position.x, position.y);
+                        liste = liste->suiv;
+                        for(int i=0; i<largeur; i++)
+                        {
+                              matrice->ecran[position.y][position.x+i+1] = tolower(c);
+                              matrice->ecran[position.y+hauteur][position.x+i+1] = tolower(c);
+                        }
+                        for(int i=0; i<hauteur; i++)
+                        {
+                              matrice->ecran[position.y+i+1][position.x] = tolower(c);
+                              matrice->ecran[position.y+i+1][position.x+largeur] = tolower(c);
+                        }
                   }
-                  for(int i=0; i<hauteur; i++)
-                  {
-                        matrice->ecran[position.y+i+1][position.x] = tolower(c);
-                        matrice->ecran[position.y+i+1][position.x+largeur] = tolower(c);
-                  }
-            }
+      }
 }
 
 
@@ -695,38 +717,12 @@ int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros hero
       }
       if (cpt == 0)
       {
-            int cptArbre;
-            while(ListeArbre->suiv != NULL)
-            {
-                  ListeArbre = ListeArbre->suiv;
-            }
-            cptArbre = ListeArbre->numero;
-            while(ListeArbre->prec != NULL)
-            {
-                  ListeArbre = ListeArbre->prec;
-            }
             for(int i=0; i<LARGEURMINE; i++)
             {
                   matrice->ecran[positionMine.y+i+1][positionMine.x] = 'm';
                   matrice->ecran[positionMine.y+i+1][positionMine.x+LARGEURMINE] = 'm';
                   matrice->ecran[positionMine.y][positionMine.x+i+1] = 'm';
                   matrice->ecran[positionMine.y+LARGEURMINE][positionMine.x+i+1] = 'm';
-            }
-            for(int numeroArbre = 0; numeroArbre<cptArbre; numeroArbre++)
-            {
-                  positionArbre.x = ListeArbre->position.x;
-                  positionArbre.y = ListeArbre->position.y;
-                  ListeArbre = ListeArbre->suiv;
-                  for(int i=0; i<LARGEURARBRE; i++)
-                  {
-                        matrice->ecran[positionArbre.y][positionArbre.x+i+1] = 'a';
-                        matrice->ecran[positionArbre.y+HAUTEURARBRE][positionArbre.x+i+1] = 'a';
-                  }
-                  for(int i=0; i<HAUTEURARBRE; i++)
-                  {
-                        matrice->ecran[positionArbre.y+i+1][positionArbre.x] = 'a';
-                        matrice->ecran[positionArbre.y+i+1][positionArbre.x+LARGEURARBRE] = 'a';
-                  }
             }
             ajoutHitbox(ListeArbre, positionArbre, matrice, HAUTEURARBRE, LARGEURARBRE, 'A');
       }
