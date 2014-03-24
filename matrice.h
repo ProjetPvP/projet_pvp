@@ -102,6 +102,7 @@ extern SDL_Surface * mine;
 extern SDL_Surface * arbre;
 extern SDL_Surface * barreHaut;
 extern SDL_Surface * barreVie;
+extern SDL_Surface * rocher;
 
 SDL_Rect positionHeros;
 SDL_Rect positionMap;
@@ -110,6 +111,7 @@ SDL_Rect positionBarreHaut;
 SDL_Rect positionBarreVie;
 SDL_Rect positionArbre;
 SDL_Rect positionMonstre;
+SDL_Rect positionRocher;
 
 #ifdef __cplusplus
 extern "C"

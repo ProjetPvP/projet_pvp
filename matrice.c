@@ -27,6 +27,7 @@ SDL_Surface * arbre= NULL;
 SDL_Surface * mine = NULL;
 SDL_Surface * barreHaut = NULL;
 SDL_Surface * barreVie = NULL;
+SDL_Surface * rocher = NULL;
 
 //==========================================================//
 //                   variables globales                     //
@@ -46,7 +47,7 @@ SDL_Surface * barreVie = NULL;
       };
 typedef struct S_ListePosition * T_ListePosition;
       static T_ListePosition ListeArbre;
-
+      static T_ListePosition ListeRocher;
 
 
 
@@ -107,7 +108,7 @@ T_Image allocT_Image( SDL_Surface * image)
       return newImage;
 }
 
-T_ListePosition allocListeArbre(SDL_Rect rect, int nombreArbre)
+T_ListePosition allocListeObjet(SDL_Rect rect, int nombreArbre)
 {
       T_ListePosition newPosition = (T_ListePosition)malloc(sizeof(struct S_ListePosition));
       newPosition->numero = nombreArbre;
@@ -191,12 +192,12 @@ T_Anim initialisationAnim(int direction)
       return newAnim;
 }
 
-T_ListePosition ajoutArbreListe(T_ListePosition maListe, SDL_Rect pos, int nombreArbre)
+T_ListePosition ajoutObjetListe(T_ListePosition maListe, SDL_Rect pos, int nombreArbre)
 {
       T_ListePosition returnListe;
       if(nombreArbre == 0)
       {
-            returnListe = allocListeArbre(pos, nombreArbre+1);
+            returnListe = allocListeObjet(pos, nombreArbre+1);
 
       }
       else
@@ -206,7 +207,7 @@ T_ListePosition ajoutArbreListe(T_ListePosition maListe, SDL_Rect pos, int nombr
             {
                   returnListe = returnListe->suiv;
             }
-            returnListe->suiv = allocListeArbre(pos, nombreArbre+1);
+            returnListe->suiv = allocListeObjet(pos, nombreArbre+1);
             returnListe->suiv->prec = returnListe;
       }
       return returnListe;
@@ -260,6 +261,12 @@ void remplissageMap(t_ecran_de_jeu matrice)
                         positionArbre.y = i;
                         SDL_BlitSurface(arbre, NULL, ecran, &positionArbre);
                   }
+                  if(matrice->ecran[i][j] == 'R')
+                  {
+                        positionRocher.x = j;
+                        positionRocher.y = i;
+                        SDL_BlitSurface(rocher, NULL, ecran, &positionRocher);
+                  }
             }
       }
 }
@@ -295,6 +302,7 @@ t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros)
 {
       nombreEntites = 0;
       int nombreArbre = 0;
+      int nombreRocher = 0;
 
       char nord[1024];
       char sud[1024];
@@ -354,8 +362,13 @@ t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros)
                         temp.x = x;
                         if(c == 'A')
                         {
-                              ListeArbre = ajoutArbreListe(ListeArbre, temp, nombreArbre);
+                              ListeArbre = ajoutObjetListe(ListeArbre, temp, nombreArbre);
                               nombreArbre++;
+                        }
+                        if(c == 'R')
+                        {
+                              ListeRocher = ajoutObjetListe(ListeRocher, temp, nombreRocher);
+                              nombreRocher++;
                         }
                   }
                   cptLigneMod3++;
@@ -616,6 +629,37 @@ bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros,
       return false;
 }
 
+void ajoutHitbox(T_ListePosition liste, SDL_Rect position, t_ecran_de_jeu matrice, int hauteur, int largeur, char c)
+{
+            int cpt;
+            while(liste->suiv != NULL)
+            {
+                  liste = liste->suiv;
+            }
+            cpt = liste->numero;
+            while(liste->prec != NULL)
+            {
+                  liste = liste->prec;
+            }
+      for(int numeroObjet = 0; numeroObjet<cpt; numeroObjet++)
+            {
+                  position.x = liste->position.x;
+                  position.y = liste->position.y;
+                  liste = liste->suiv;
+                  for(int i=0; i<largeur; i++)
+                  {
+                        matrice->ecran[position.y][position.x+i+1] = tolower(c);
+                        matrice->ecran[position.y+hauteur][position.x+i+1] = tolower(c);
+                  }
+                  for(int i=0; i<hauteur; i++)
+                  {
+                        matrice->ecran[position.y+i+1][position.x] = tolower(c);
+                        matrice->ecran[position.y+i+1][position.x+largeur] = tolower(c);
+                  }
+            }
+}
+
+
 int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros heros)
 {
       if (direction == BAS)
@@ -684,6 +728,7 @@ int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros hero
                         matrice->ecran[positionArbre.y+i+1][positionArbre.x+LARGEURARBRE] = 'a';
                   }
             }
+            ajoutHitbox(ListeArbre, positionArbre, matrice, HAUTEURARBRE, LARGEURARBRE, 'A');
       }
       cpt++;
       return verificationDeplacementHitbox(matrice, matrice->positionHeros, LARGEURHEROSPIXEL, HAUTEURHEROSPIXEL, direction, nb, heros);
