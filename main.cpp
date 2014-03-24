@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <SDL/SDL.h>
 #include <stdbool.h>
+#include <pthread.h>
 #include "matrice.h"
 #include "heros.h"
 
@@ -30,8 +31,8 @@ int main ( int argc, char** argv )
 
       t_ecran_de_jeu matrice;
       matrice = create_ecran_de_jeu(HAUTEUR, LARGEUR, positionHeros.x, positionHeros.y);
-      initMatrice(matrice);
-      chargementFichier("carteDepart.map");
+//      initMatrice(matrice);
+
       barreHaut = SDL_CreateRGBSurface(SDL_HWSURFACE, 600, 50, 32, 0, 0, 0, 0);
       int continuer = 1;
        if (SDL_INIT_VIDEO == -1)
@@ -63,8 +64,9 @@ int main ( int argc, char** argv )
       HerosAnimationHaut = SDL_LoadBMP("images/heros_animation_haut.bmp");
       HerosAnimation2Haut = SDL_LoadBMP("images/heros_animation2_haut.bmp");
 
-      myMap = SDL_LoadBMP("sol4.bmp");
+      myMap = SDL_LoadBMP("images/Map1Vide.bmp");
       mine = SDL_LoadBMP("nvMine.bmp");
+      arbre = SDL_LoadBMP("images/arbre.bmp");
       //======================================================================//
       //                            création T_anim                           //
       //======================================================================//
@@ -97,81 +99,109 @@ int main ( int argc, char** argv )
       SDL_SetColorKey(HerosAnimation2Bas, SDL_SRCCOLORKEY, SDL_MapRGB(HerosAnimation2Bas->format, 255, 0, 0));
 
       SDL_SetColorKey(mine, SDL_SRCCOLORKEY, SDL_MapRGB(mine->format, 255, 0, 0));
+      SDL_SetColorKey(arbre, SDL_SRCCOLORKEY, SDL_MapRGB(arbre->format, 255, 0, 0));
       SDL_Flip(ecran);
 
-
       T_Heros heros = allocHeros("TestHeros", "sol4.bmp");
+      matrice = chargementFichier("maps/depart.map", heros);
+
       int hit = 0;
+      int nbDeplacement =  1;
+
+      T_Param_Thread my_Param_Thread = allocParamThread(matrice, nbDeplacement);
 
       int direction = NUL;
-      int nbDeplacement =  1;
+
       Uint8 *keystates = SDL_GetKeyState( NULL );
       int compteurboucle = 0;
+      bool thread_created = false;
+      pthread_t thread;
       while(continuer)
       {
             SDL_PollEvent(&event);
-            switch (event.type)
-            {
-                  case SDL_QUIT : continuer = 0;break;
-                  case SDL_KEYDOWN :
-                  switch (event.key.keysym.sym)
+                  switch (event.type)
                   {
-                        case SDLK_ESCAPE :
-                                        continuer = 0;
-                                        break;
-                        default :
-                                   break;
-                  }break;
-            }
-            if(compteurboucle == 0)
-            {
-                  if (keystates[SDLK_UP])                                     // les keystats permettent le déplacement en diagonal.
-                  {
-                        if (verifierPoussee(matrice, HAUT,matrice->positionHeros, nbDeplacement))
+                        case SDL_QUIT : continuer = 0;break;
+                        case SDL_KEYDOWN :
+                        switch (event.key.keysym.sym)
                         {
-                             hit = replacementHeros(matrice, HAUT, nbDeplacement, heros);
-                        }
-                        animEnCours = herosHautAnim;
-                        direction = HAUT;
+                              case SDLK_ESCAPE :
+                                              continuer = 0;
+                                              break;
+                              default :
+                                         break;
+                        }break;
                   }
-                  if (keystates[SDLK_DOWN])
-                  {
-                        if (verifierPoussee(matrice, BAS, matrice->positionHeros, nbDeplacement))
+                        if (keystates[SDLK_UP])                                     // les keystats permettent le déplacement en diagonal
                         {
-                             hit = replacementHeros(matrice, BAS, nbDeplacement, heros);
+                              if (verifierPoussee(matrice, HAUT,matrice->positionHeros, nbDeplacement))
+                              {
+                                   hit = replacementHeros(matrice, HAUT, nbDeplacement, heros);
+                              }
+                              animEnCours = herosHautAnim;
+                              direction = HAUT;
                         }
-                        direction = BAS;
-                        animEnCours = herosBasAnim;
-                  }
-                  if (keystates[SDLK_RIGHT])
-                  {
-                        if (verifierPoussee(matrice, DROITE, matrice->positionHeros, nbDeplacement))
+                        if (keystates[SDLK_DOWN])
                         {
-                              hit = replacementHeros(matrice, DROITE, nbDeplacement, heros);
+                              if (verifierPoussee(matrice, BAS, matrice->positionHeros, nbDeplacement))
+                              {
+                                   hit = replacementHeros(matrice, BAS, nbDeplacement, heros);
+                              }
+                              direction = BAS;
+                              animEnCours = herosBasAnim;
                         }
-                        animEnCours = herosDroiteAnim;
-                        direction = DROITE;
-                  }
-                  if (keystates[SDLK_LEFT])
-                  {
-                        if (verifierPoussee(matrice, GAUCHE, matrice->positionHeros, nbDeplacement))
+                        if (keystates[SDLK_RIGHT])
                         {
-                              hit = replacementHeros(matrice, GAUCHE, nbDeplacement, heros);
+                              if (verifierPoussee(matrice, DROITE, matrice->positionHeros, nbDeplacement))
+                              {
+                                    hit = replacementHeros(matrice, DROITE, nbDeplacement, heros);
+                              }
+                              animEnCours = herosDroiteAnim;
+                              direction = DROITE;
                         }
-                        animEnCours = herosGaucheAnim;
-                        direction = GAUCHE;
-                  }
-
-               }
+                        if (keystates[SDLK_LEFT])
+                        {
+                              if (verifierPoussee(matrice, GAUCHE, matrice->positionHeros, nbDeplacement))
+                              {
+                                    hit = replacementHeros(matrice, GAUCHE, nbDeplacement, heros);
+                              }
+                              animEnCours = herosGaucheAnim;
+                              direction = GAUCHE;
+                        }
 
 
-            LectureMatrice(matrice, ecran, barreHaut, direction, animEnCours, heros);
-            if(hit != 3){
-                  SDL_Delay(3);
-            }
-            else{
-                  SDL_Delay(200);
-            }
-             direction = NUL;// Affiche la matrice telle qu'elle est
+
+
+                  LectureMatrice(matrice, ecran, barreHaut, direction, animEnCours, heros);
+                  if(hit == 3)
+                  {
+                       SDL_Delay(200);
+                  }
+                  else if(hit == 0)
+                  {
+                        SDL_Delay(3);
+                  }
+                  if(thread_created == false)
+                  {
+                        thread_created = true;
+                        int err;
+                        //int threadReturnValue;
+                        //calculDeplacementMonstre(monstre,matrice,nbDeplacement);
+                        //err = pthread_create (&thread, NULL, calculDeplacementMonstre, &my_Param_Thread);
+
+                        if(err == 0)
+                        {
+                              fprintf(stderr,"Thread créé !\n");
+                        }
+
+                        fprintf(stderr, "Thread terminé\n");
+
+                  }
+                   direction = NUL;// Affiche la matrice telle qu'elle est*/
+
       }
+      fprintf(stderr,"Jeu fini\n");
+      //pthread_join (thread, NULL);
+
+      return EXIT_SUCCESS;
 }

@@ -23,9 +23,22 @@ SDL_Surface * HerosAnimationDroite = NULL;
 SDL_Surface * HerosAnimation2Droite = NULL;
 
 SDL_Surface * myMap = NULL;
+SDL_Surface * arbre= NULL;
 SDL_Surface * mine = NULL;
 SDL_Surface * barreHaut = NULL;
 SDL_Surface * barreVie = NULL;
+
+//==========================================================//
+//                   variables globales                     //
+//==========================================================//
+
+      static int cpt = 0;
+      static int verifDirection = NUL;
+      static int nombreEntites = 0;
+      static SDL_Rect * tableauPositionArbre;
+
+
+
 
 
 //==========================================================//
@@ -48,9 +61,17 @@ t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne
 	matrice->ouest = NULL;
 	matrice->hauteur = hauteur;
 	matrice->largeur = largeur;
+
 	matrice->positionHeros.ligne = posHerosLigne;
 	matrice->positionHeros.colonne = posHerosColonne;
+
+	matrice->tab_monstres = (T_Monstre)malloc(sizeof(struct S_Monstre));
 	return matrice;
+}
+
+void changement_tailleTableau(t_ecran_de_jeu matrice)
+{
+      matrice->tab_monstres = realloc(matrice->tab_monstres, nombreEntites * sizeof(struct S_Monstre));
 }
 
 //==========================================================//
@@ -72,6 +93,30 @@ T_Image allocT_Image( SDL_Surface * image)
       newImage->image_suiv = NULL;
       newImage->position= 0;
       return newImage;
+}
+
+T_Monstre allocMonstre(int vie, int damage, int ligne, int colonne)
+{
+      T_Monstre newMonstre = (T_Monstre)malloc(sizeof(struct S_Monstre));
+      newMonstre->vie = vie;
+      newMonstre->degats = damage;
+
+      newMonstre->pos_monstre.ligne = ligne;
+      newMonstre->pos_monstre.colonne = colonne;
+
+      newMonstre->aggressif = false;
+      return newMonstre;
+}
+
+T_Param_Thread allocParamThread (t_ecran_de_jeu matrice, int nbdeplacement)
+{
+      T_Param_Thread newParamThread = (T_Param_Thread)malloc(sizeof(struct S_Param_Thread));
+      newParamThread->monstre = allocMonstre(10,10, 10,10);
+      newParamThread->matrice = (t_ecran_de_jeu)malloc(sizeof(struct s_ecran_de_jeu));
+      newParamThread->matrice = matrice;
+      newParamThread->nbdeplacement = nbdeplacement;
+
+      return newParamThread;
 }
 
 T_Anim initialisationAnim(int direction)
@@ -123,96 +168,6 @@ T_Anim initialisationAnim(int direction)
       return newAnim;
 }
 
-
-//==========================================================//
-//                   variables globales                     //
-//==========================================================//
-
-      static int cpt = 0;
-      static int verifDirection = NUL;
-
-//==========================================================//
-//                     Affiche barre vie                    //
-//==========================================================//
-
-void afficheBarreVie(T_Heros heros, SDL_Surface* ecran)
-{
-      positionBarreVie.h = 20;
-      positionBarreVie.w = heros->vie;
-      barreVie = SDL_CreateRGBSurface(SDL_HWSURFACE, heros->vie*2, 20, 32, 0, 0, 0, 0);
-      SDL_FillRect(barreVie, NULL, SDL_MapRGB(ecran->format, 255, 0, 0));
-      SDL_BlitSurface(barreVie, NULL, ecran, &positionBarreVie);
-}
-
-
-//==========================================================//
-//                     ChargementFichier                    //
-//==========================================================//
-t_ecran_de_jeu chargementFichier(char* nomFichier)
-{
-      char nord[1024];
-      char sud[1024];
-      char est[1024];
-      char ouest[1024];
-      char ligne[1024];
-      t_ecran_de_jeu matrice = create_ecran_de_jeu(HAUTEUR, LARGEUR, positionHeros.x, positionHeros.y);
-
-      FILE* fichier = fopen(nomFichier, "r");
-      fgets(nord, 1024, fichier);
-      fprintf(stderr, "%s\n", nord);
-      fgets(sud, 1024, fichier);
-      fgets(est, 1024, fichier);
-      fgets(ouest, 1024, fichier);
-      int cptLigneimpaires = 1;
-      int cptCoordonnees = 0;
-      char c;
-      int y;
-      int x;
-      while(fgets(ligne, 1024, fichier) != NULL)
-      {
-            if(cptLigneimpaires % 2 != 0)
-            {
-                  c = ligne[0];
-                  cptLigneimpaires++;
-            }
-            else
-            {
-                  if(cptCoordonnees == 0)
-                  {
-                        y = strtol(ligne, NULL, 10);
-                        cptCoordonnees++;
-                  }
-                  else
-                  {
-                        x = strtol(ligne, NULL, 10);
-                        cptCoordonnees++;
-                  }
-            cptLigneimpaires++;
-            }
-            if (cptCoordonnees == 2)
-            {
-                  matrice->ecran[y][x] = c;
-                  cptCoordonnees = 0;
-            }
-      }
-//      fprintf(stderr, "%s, %s, %s, %s\n", nord, sud, est, ouest);
-//      for(int i=0; i<HAUTEUR; i++)
-//      {
-//            for(int j=0; j<LARGEUR; j++)
-//            {
-//                  if (matrice->ecran[i][j] != ' ')
-//                  {
-//                        fprintf(stderr, "[%c : |%d| |%d|]\n", matrice->ecran[i][j], i, j);
-//                  }
-//            }
-//      }
-      fclose(fichier);
-return matrice;
-
-}
-
-
-
 //==========================================================//
 //                    initMatriceVide                       //
 //==========================================================//
@@ -230,9 +185,9 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
                   else if (matrice->positionHeros.ligne == i && matrice->positionHeros.colonne == j)
                   {
                         matrice->ecran[i][j] = 'H';
-                        matrice->ecran[i-40][j-50] = 'M';
-                        positionMine.y = matrice->positionHeros.ligne-40;
-                        positionMine.x = matrice->positionHeros.colonne-50;
+//                        matrice->ecran[i-40][j-50] = 'M';
+//                        positionMine.y = matrice->positionHeros.ligne-40;
+//                        positionMine.x = matrice->positionHeros.colonne-50;
                   }
                   else
                   {
@@ -241,6 +196,132 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
             }
       }
 }
+
+void remplissageMap(t_ecran_de_jeu matrice)
+{
+      for(int i=0; i<HAUTEUR; i++)
+      {
+            for(int j=0; j<LARGEUR; j++)
+            {
+                  if(matrice->ecran[i][j] == 'M')
+                  {
+                        positionMine.x = j;
+                        positionMine.y = i;
+                        SDL_BlitSurface(mine, NULL, ecran, &positionMine);
+                  }
+                  if(matrice->ecran[i][j] == 'A')
+                  {
+                        positionArbre.x = j;
+                        positionArbre.y = i;
+                        SDL_BlitSurface(arbre, NULL, ecran, &positionArbre);
+                  }
+            }
+      }
+}
+
+//==========================================================//
+//                     Affiche barre vie                    //
+//==========================================================//
+
+
+void afficheBarreVie(T_Heros heros, SDL_Surface* ecran)
+{
+      SDL_Rect rect;
+      rect.x = positionBarreVie.x;
+      rect.y = positionBarreVie.y;
+      rect.w = heros->vie*2;
+      rect.h = 20;
+      SDL_FillRect(ecran, &rect, SDL_MapRGB(ecran->format, 255, 0, 0));
+
+}
+
+char* replaceString(char* string)
+{
+      char* strTmp = (char*)malloc(strlen(string)*sizeof(char));
+      strcpy(strTmp, string);
+      strTmp[strlen(string)-1] = '\0';
+      return strTmp;
+}
+
+//==========================================================//
+//                     ChargementFichier                    //
+//==========================================================//
+t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros)
+{
+      nombreEntites = 0;
+      char nord[1024];
+      char sud[1024];
+      char est[1024];
+      char ouest[1024];
+      char nomMap[1024];
+      char test[1024];
+      char ligne[1024];
+      t_ecran_de_jeu matrice = create_ecran_de_jeu(HAUTEUR, LARGEUR, positionHeros.x, positionHeros.y);
+      initMatrice(matrice);
+      FILE* fichier = fopen(nomFichier, "r");
+
+      if (fichier != NULL)
+      {
+            fprintf(stderr, "prout");
+            fgets(nord, 1024, fichier);
+            fgets(sud, 1024, fichier);
+            fgets(est, 1024, fichier);
+            fgets(ouest, 1024, fichier);
+            fgets(nomMap, 1024, fichier);
+            fgets(test, 1024, fichier);
+
+            fprintf(stderr, "[%s, %s, %s, %s, %s, %s]\n",replaceString(nord), replaceString(sud), replaceString(est), replaceString(ouest), replaceString(nomMap), replaceString(test) );
+            strcpy(heros->mapActuelle, replaceString(nomMap));
+            fprintf(stderr, "%s\n", heros->mapActuelle);
+            int cptLigneimpaires = 1;
+            int cptCoordonnees = 0;
+            char c;
+            int y;
+            int x;
+            while(fgets(ligne, 1024, fichier) != NULL)
+            {
+                  if(cptLigneimpaires % 2 != 0)
+                  {
+                        c = ligne[0];
+                        if(c == 'M')
+                        {
+                              nombreEntites++;
+                        }
+                        cptLigneimpaires++;
+                  }
+                  else
+                  {
+                        if(cptCoordonnees == 0)
+                        {
+                              y = strtol(ligne, NULL, 10);
+                              cptCoordonnees++;
+                        }
+                        else
+                        {
+                              x = strtol(ligne, NULL, 10);
+                              cptCoordonnees++;
+                        }
+                  cptLigneimpaires++;
+                  }
+                  if (cptCoordonnees == 2)
+                  {
+                        matrice->ecran[y][x] = c;
+                        cptCoordonnees = 0;
+                  }
+            }
+      }
+      else
+      {
+            fprintf(stderr,"ERREUR LORS DE L'OUVERTURE DU FICHIER" );
+      }
+      fclose(fichier);
+return matrice;
+
+}
+
+
+
+
 //==========================================================//
 //                    Lecture matrice                       //
 //==========================================================//
@@ -270,14 +351,16 @@ SDL_Surface * choixAnimHeros(int direction, T_Anim anim)
 void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie, int direction, T_Anim anim, T_Heros heros)
 {
       SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
+      SDL_FreeSurface(myMap);
+      SDL_Surface * myMap = SDL_LoadBMP(heros->mapActuelle);
+      SDL_BlitSurface(myMap, NULL, ecran, &positionMap);
       SDL_FillRect(barreHaut, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
       SDL_BlitSurface(barreHaut, NULL, ecran, &positionBarreHaut);
       afficheBarreVie(heros, ecran);
-
+      remplissageMap(matrice);
       positionHeros.x = matrice->positionHeros.colonne;
       positionHeros.y = matrice->positionHeros.ligne;
       SDL_BlitSurface(choixAnimHeros(direction, anim), NULL, ecran, &positionHeros);
-      SDL_BlitSurface(mine, NULL, ecran, &positionMine);
 
       SDL_Flip(ecran);
 }
@@ -289,7 +372,6 @@ int takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_Her
 {
       bool damagetaken = false;
       heros->vie -= 5;
-      fprintf(stderr,"%d \n", heros->vie);
       if(heros->vie <= 0)
       {
        exit(EXIT_SUCCESS);
@@ -310,7 +392,6 @@ int takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_Her
                   for(int i=0; i<20; i++)
                   {
                     matrice->positionHeros.colonne += 1;
-                    SDL_Delay(7);
                   }
                }
           }
@@ -328,7 +409,7 @@ int takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_Her
                   for(int i=0; i<20; i++)
                   {
                     matrice->positionHeros.colonne -= 1;
-                    SDL_Delay(7);
+
                   }
                }
           }
@@ -346,7 +427,7 @@ int takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_Her
                   for(int i=0; i<20; i++)
                   {
                     matrice->positionHeros.ligne -= 1;
-                    SDL_Delay(7);
+
                   }
                }
           }
@@ -364,7 +445,6 @@ int takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_Her
                   for(int i=0; i<20; i++)
                   {
                     matrice->positionHeros.ligne += 1;
-                    SDL_Delay(7);
                   }
                }
           }
@@ -477,7 +557,6 @@ bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros,
                   return true;
             }
       }
-      //takedamage(matrice, direction, positionHeros, deplacement, 'c');
       return false;
 }
 
@@ -504,7 +583,7 @@ int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros hero
       {
             for (int j=0; j<LARGEUR; j++)
             {
-                  if(matrice->ecran[i][j] != 'M' && matrice->ecran[i][j] != 'm')
+                  if(matrice->ecran[i][j] != 'M' && matrice->ecran[i][j] != 'm' && matrice->ecran[i][j] != 'A' && matrice->ecran[i][j] != 'a')
                   {
                         matrice->ecran[i][j] = ' ';
                   }
@@ -518,30 +597,130 @@ int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros hero
       {
             for(int i=0; i<LARGEURMINE; i++)
             {
-                  matrice->ecran[positionMine.y+i+1][positionMine.x] = 'M';
-                  matrice->ecran[positionMine.y+i+1][positionMine.x+LARGEURMINE] = 'M';
-                  matrice->ecran[positionMine.y][positionMine.x+i+1] = 'M';
-                  matrice->ecran[positionMine.y+LARGEURMINE][positionMine.x+i+1] = 'M';
+                  matrice->ecran[positionMine.y+i+1][positionMine.x] = 'm';
+                  matrice->ecran[positionMine.y+i+1][positionMine.x+LARGEURMINE] = 'm';
+                  matrice->ecran[positionMine.y][positionMine.x+i+1] = 'm';
+                  matrice->ecran[positionMine.y+LARGEURMINE][positionMine.x+i+1] = 'm';
             }
-//            int cpt2 = 0;
-//            for(int i=0; i<HAUTEUR; i++)
-//            {
-//                  for(int j=0; j<LARGEUR; j++)
-//                  {
-//                        if (matrice->ecran[i][j] != ' ')
-//                        {
-//                              cpt2++;
-//                              fprintf(stderr, "%c", matrice->ecran[i][j]);
-//                              fprintf(stderr, "[%d][%d]", i,j);
-//                        }
-//                  }
-//                  if(cpt2 != 0)
-//                  {
-//                        fprintf(stderr, "\n");
-//                  }
-//                  cpt2 = 0;
-//            }
+            for(int i=0; i<LARGEURARBRE; i++)
+            {
+                  matrice->ecran[positionArbre.y][positionArbre.x+i+1] = 'a';
+                  matrice->ecran[positionArbre.y+HAUTEURARBRE][positionArbre.x+i+1] = 'a';
+            }
+            for(int i=0; i<HAUTEURARBRE; i++)
+            {
+                  matrice->ecran[positionArbre.y+i+1][positionArbre.x] = 'a';
+                  matrice->ecran[positionArbre.y+i+1][positionArbre.x+LARGEURARBRE] = 'a';
+            }
       }
       cpt++;
       return verificationDeplacementHitbox(matrice, matrice->positionHeros, LARGEURHEROSPIXEL, HAUTEURHEROSPIXEL, direction, nb, heros);
+}
+
+
+void deplacementMonstre(T_Monstre monstre, t_ecran_de_jeu matrice, int direction){
+      fprintf(stderr,"DEPLACEMENT MONSTRE %d", direction);
+}
+
+void* calculDeplacementMonstre(void* my_Param_Thread)
+{
+      Uint32 tempsActuel = 0;
+      Uint32 tempsPrecedent = 0;
+      int directionMonstre = GAUCHE;
+      int cptmvt = 0;
+      int nbTours = 0;
+      while(1)
+      {
+            if(Param_Thread->matrice->positionHeros.ligne == Param_Thread->monstre->pos_monstre.ligne || Param_Thread->matrice->positionHeros.colonne == Param_Thread->monstre->pos_monstre.colonne)
+            {
+                 Param_Thread->monstre->aggressif = true;
+            }
+            if (Param_Thread->monstre->aggressif == true) //Si 30 ms se sont écoulées depuis le dernier tour de boucle
+            {
+                  while(Param_Thread->monstre->pos_monstre.colonne != Param_Thread->matrice->positionHeros.colonne
+                  && Param_Thread->monstre->pos_monstre.ligne != Param_Thread->matrice->positionHeros.ligne
+                  && Param_Thread->monstre->aggressif == true){
+                      //  Detection de la position du monstre par rapport au héros
+                        if((abs(Param_Thread->monstre->pos_monstre.ligne - Param_Thread->matrice->positionHeros.ligne))
+                           <
+                           (abs(Param_Thread->monstre->pos_monstre.colonne) - Param_Thread->matrice->positionHeros.colonne))
+                        {
+                              if(Param_Thread->monstre->pos_monstre.ligne > Param_Thread->matrice->positionHeros.ligne){
+                                   deplacementMonstre(Param_Thread->monstre, Param_Thread->matrice, directionMonstre);
+                              }
+                              else if(Param_Thread->monstre->pos_monstre.ligne < Param_Thread->matrice->positionHeros.ligne){
+                                    deplacementMonstre(Param_Thread->monstre, Param_Thread->matrice, directionMonstre);
+                              }
+                        }
+                        else{
+                              if(Param_Thread->monstre->pos_monstre.colonne > Param_Thread->matrice->positionHeros.colonne){
+                                    deplacementMonstre(Param_Thread->monstre, Param_Thread->matrice, directionMonstre);
+                              }
+                              else if(Param_Thread->monstre->pos_monstre.colonne < Param_Thread->matrice->positionHeros.colonne){
+                                    deplacementMonstre(Param_Thread->monstre, Param_Thread->matrice, directionMonstre);
+                              }
+                        }
+                  }
+            }
+            else{
+                  tempsActuel = SDL_GetTicks();
+                  if (tempsActuel - tempsPrecedent > 10)
+                  {
+                        //fprintf(stderr,"IF : %d \n", tempsActuel -tempsPrecedent);
+                        switch(directionMonstre)
+                        {
+                        case GAUCHE :
+                                    Param_Thread->monstre->pos_monstre.colonne -= Param_Thread->nbdeplacement;
+                                    cptmvt++;
+                                    fprintf(stderr,"DEPLACEMENT MONSTRE %d", directionMonstre);
+                                    if(cptmvt == 30){
+                                          fprintf(stderr,"\n");
+                                          directionMonstre = HAUT;
+                                          cptmvt = 0;
+                                    }
+                                    break;
+                        case HAUT  :
+                                    Param_Thread->monstre->pos_monstre.ligne += Param_Thread->nbdeplacement;
+                                    fprintf(stderr,"DEPLACEMENT MONSTRE %d", directionMonstre);
+                                    cptmvt++;
+                                    if(cptmvt == 30){
+                                          fprintf(stderr,"\n");
+                                          directionMonstre = DROITE;
+                                          cptmvt = 0;
+                                    }
+                                    break;
+                        case DROITE :
+                                    Param_Thread->monstre->pos_monstre.colonne += Param_Thread->nbdeplacement;
+                                    fprintf(stderr,"DEPLACEMENT MONSTRE %d", directionMonstre);
+                                    cptmvt++;
+                                    if(cptmvt == 30){
+                                          fprintf(stderr,"\n");
+                                          directionMonstre = BAS;
+                                          cptmvt = 0;
+                                    }
+                                    break;
+                        case BAS :
+                                    Param_Thread->monstre->pos_monstre.ligne += Param_Thread->nbdeplacement;
+                                    fprintf(stderr,"DEPLACEMENT MONSTRE %d", directionMonstre);
+                                    cptmvt++;
+                                    if(cptmvt == 30){
+                                          fprintf(stderr,"\n");
+                                          directionMonstre = GAUCHE;
+                                          cptmvt = 0;
+                                          nbTours++;
+                                    }
+                                    break;
+                        //case default :
+                          //          break;
+                        }
+                        tempsPrecedent = tempsActuel;
+                  }
+                 else  //Si ça fait moins de 30 ms depuis le dernier tour de boucle, on endort le programme le temps qu'il faut
+                  {
+                       // fprintf(stderr,"ELSE : %d \n", 10 - (tempsActuel - tempsPrecedent));
+                        SDL_Delay(10 - (tempsActuel - tempsPrecedent));
+                  }
+           }
+      }
+      return 0;
 }

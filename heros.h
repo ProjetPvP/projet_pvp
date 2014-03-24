@@ -2,6 +2,10 @@
 #define _HEROS_H
 #include "matrice.h"
 
+struct s_pos;
+typedef struct s_pos t_pos;
+
+
 
 struct S_Objet
 {
@@ -26,12 +30,7 @@ struct S_Heros
       char* mapActuelle;
       T_Inventaire inventaire;
 };
-
 typedef struct S_Heros * T_Heros;
-
-
-
-
 
 
 #ifdef __cplusplus

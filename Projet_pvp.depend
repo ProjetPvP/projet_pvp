@@ -1,21 +1,22 @@
 # depslib dependency file v1.0
-1395498536 source:c:\users\olivier\desktop\projet prog\projet_pvp\matrice.c
+1395657960 source:c:\users\olivier\desktop\projet prog\projet_pvp\matrice.c
 	<stdlib.h>
 	<SDL/SDL.h>
 	<stdbool.h>
 	<stdio.h>
 	"matrice.h"
 
-1395498796 c:\users\olivier\desktop\projet prog\projet_pvp\matrice.h
+1395658454 c:\users\olivier\desktop\projet prog\projet_pvp\matrice.h
 	<stdlib.h>
 	<SDL/SDL.h>
 	<stdbool.h>
 	"heros.h"
 
-1395498081 source:c:\users\olivier\desktop\projet prog\projet_pvp\main.cpp
+1395659437 source:c:\users\olivier\desktop\projet prog\projet_pvp\main.cpp
 	<stdlib.h>
 	<SDL/SDL.h>
 	<stdbool.h>
+	<pthread.h>
 	"matrice.h"
 	"heros.h"
 
@@ -25,12 +26,12 @@
 	<stdbool.h>
 	"matrice.h"
 
-1395493243 source:c:\users\olivier\desktop\projet prog\projet_pvp\heros.c
+1395586111 source:c:\users\olivier\desktop\projet prog\projet_pvp\heros.c
 	<stdlib.h>
 	<SDL/SDL.h>
 	<stdbool.h>
 	"heros.h"
 
-1395493249 c:\users\olivier\desktop\projet prog\projet_pvp\heros.h
+1395589653 c:\users\olivier\desktop\projet prog\projet_pvp\heros.h
 	"matrice.h"
 
