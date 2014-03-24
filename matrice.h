@@ -46,6 +46,8 @@ typedef struct S_Monstre
 
 }* T_Monstre;
 
+
+
 struct s_ecran_de_jeu
 {
       char** ecran;

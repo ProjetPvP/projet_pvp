@@ -189,10 +189,10 @@ int main ( int argc, char** argv )
                         //calculDeplacementMonstre(monstre,matrice,nbDeplacement);
                         //err = pthread_create (&thread, NULL, calculDeplacementMonstre, &my_Param_Thread);
 
-                        if(err == 0)
-                        {
-                              fprintf(stderr,"Thread créé !\n");
-                        }
+//                        if(err == 0)
+//                        {
+//                              fprintf(stderr,"Thread créé !\n");
+//                        }
 
                         fprintf(stderr, "Thread terminé\n");
 

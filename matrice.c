@@ -35,7 +35,17 @@ SDL_Surface * barreVie = NULL;
       static int cpt = 0;
       static int verifDirection = NUL;
       static int nombreEntites = 0;
-      static SDL_Rect * tableauPositionArbre;
+      struct S_ListePosition;
+      typedef struct S_ListePosition * T_ListePosition;
+      struct S_ListePosition
+      {
+            int numero;
+            SDL_Rect position;
+            T_ListePosition suiv;
+            T_ListePosition prec;
+      };
+typedef struct S_ListePosition * T_ListePosition;
+      static T_ListePosition ListeArbre;
 
 
 
@@ -69,6 +79,8 @@ t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne
 	return matrice;
 }
 
+
+
 void changement_tailleTableau(t_ecran_de_jeu matrice)
 {
       matrice->tab_monstres = realloc(matrice->tab_monstres, nombreEntites * sizeof(struct S_Monstre));
@@ -94,6 +106,17 @@ T_Image allocT_Image( SDL_Surface * image)
       newImage->position= 0;
       return newImage;
 }
+
+T_ListePosition allocListeArbre(SDL_Rect rect, int nombreArbre)
+{
+      T_ListePosition newPosition = (T_ListePosition)malloc(sizeof(struct S_ListePosition));
+      newPosition->numero = nombreArbre;
+      newPosition->position = rect;
+      newPosition->suiv = NULL;
+      newPosition->prec = NULL;
+      return newPosition;
+}
+
 
 T_Monstre allocMonstre(int vie, int damage, int ligne, int colonne)
 {
@@ -167,6 +190,28 @@ T_Anim initialisationAnim(int direction)
       newImage4->position = 4;
       return newAnim;
 }
+
+T_ListePosition ajoutArbreListe(T_ListePosition maListe, SDL_Rect pos, int nombreArbre)
+{
+      T_ListePosition returnListe;
+      if(nombreArbre == 0)
+      {
+            returnListe = allocListeArbre(pos, nombreArbre+1);
+
+      }
+      else
+      {
+            returnListe = maListe;
+            while(returnListe->suiv != NULL)
+            {
+                  returnListe = returnListe->suiv;
+            }
+            returnListe->suiv = allocListeArbre(pos, nombreArbre+1);
+            returnListe->suiv->prec = returnListe;
+      }
+      return returnListe;
+}
+
 
 //==========================================================//
 //                    initMatriceVide                       //
@@ -249,6 +294,8 @@ char* replaceString(char* string)
 t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros)
 {
       nombreEntites = 0;
+      int nombreArbre = 0;
+
       char nord[1024];
       char sud[1024];
       char est[1024];
@@ -273,47 +320,56 @@ t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros)
             fprintf(stderr, "[%s, %s, %s, %s, %s, %s]\n",replaceString(nord), replaceString(sud), replaceString(est), replaceString(ouest), replaceString(nomMap), replaceString(test) );
             strcpy(heros->mapActuelle, replaceString(nomMap));
             fprintf(stderr, "%s\n", heros->mapActuelle);
-            int cptLigneimpaires = 1;
-            int cptCoordonnees = 0;
+            int cptLigneMod3 = 0;
             char c;
             int y;
             int x;
             while(fgets(ligne, 1024, fichier) != NULL)
             {
-                  if(cptLigneimpaires % 2 != 0)
+                  fprintf(stderr, "cptmod3 : %d\n", cptLigneMod3);
+                  if(cptLigneMod3 % 3 == 0)
                   {
                         c = ligne[0];
                         if(c == 'M')
                         {
                               nombreEntites++;
                         }
-                        cptLigneimpaires++;
                   }
                   else
                   {
-                        if(cptCoordonnees == 0)
+                        if(cptLigneMod3 % 3 == 1)
                         {
                               y = strtol(ligne, NULL, 10);
-                              cptCoordonnees++;
                         }
                         else
                         {
                               x = strtol(ligne, NULL, 10);
-                              cptCoordonnees++;
                         }
-                  cptLigneimpaires++;
                   }
-                  if (cptCoordonnees == 2)
+                  if (cptLigneMod3 %3 == 2)
                   {
                         matrice->ecran[y][x] = c;
-                        cptCoordonnees = 0;
+                        SDL_Rect temp;
+                        temp.y = y;
+                        temp.x = x;
+                        if(c == 'A')
+                        {
+                              ListeArbre = ajoutArbreListe(ListeArbre, temp, nombreArbre);
+                              nombreArbre++;
+                        }
                   }
+                  cptLigneMod3++;
             }
       }
       else
       {
             fprintf(stderr,"ERREUR LORS DE L'OUVERTURE DU FICHIER" );
       }
+      while(ListeArbre->prec != NULL)
+      {
+            ListeArbre = ListeArbre->prec;
+      }
+      fprintf(stderr, "nombrearbre : [%d]\n", ListeArbre->numero);
       fclose(fichier);
 return matrice;
 
@@ -595,6 +651,16 @@ int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros hero
       }
       if (cpt == 0)
       {
+            int cptArbre;
+            while(ListeArbre->suiv != NULL)
+            {
+                  ListeArbre = ListeArbre->suiv;
+            }
+            cptArbre = ListeArbre->numero;
+            while(ListeArbre->prec != NULL)
+            {
+                  ListeArbre = ListeArbre->prec;
+            }
             for(int i=0; i<LARGEURMINE; i++)
             {
                   matrice->ecran[positionMine.y+i+1][positionMine.x] = 'm';
@@ -602,15 +668,21 @@ int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros hero
                   matrice->ecran[positionMine.y][positionMine.x+i+1] = 'm';
                   matrice->ecran[positionMine.y+LARGEURMINE][positionMine.x+i+1] = 'm';
             }
-            for(int i=0; i<LARGEURARBRE; i++)
+            for(int numeroArbre = 0; numeroArbre<cptArbre; numeroArbre++)
             {
-                  matrice->ecran[positionArbre.y][positionArbre.x+i+1] = 'a';
-                  matrice->ecran[positionArbre.y+HAUTEURARBRE][positionArbre.x+i+1] = 'a';
-            }
-            for(int i=0; i<HAUTEURARBRE; i++)
-            {
-                  matrice->ecran[positionArbre.y+i+1][positionArbre.x] = 'a';
-                  matrice->ecran[positionArbre.y+i+1][positionArbre.x+LARGEURARBRE] = 'a';
+                  positionArbre.x = ListeArbre->position.x;
+                  positionArbre.y = ListeArbre->position.y;
+                  ListeArbre = ListeArbre->suiv;
+                  for(int i=0; i<LARGEURARBRE; i++)
+                  {
+                        matrice->ecran[positionArbre.y][positionArbre.x+i+1] = 'a';
+                        matrice->ecran[positionArbre.y+HAUTEURARBRE][positionArbre.x+i+1] = 'a';
+                  }
+                  for(int i=0; i<HAUTEURARBRE; i++)
+                  {
+                        matrice->ecran[positionArbre.y+i+1][positionArbre.x] = 'a';
+                        matrice->ecran[positionArbre.y+i+1][positionArbre.x+LARGEURARBRE] = 'a';
+                  }
             }
       }
       cpt++;
