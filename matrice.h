@@ -9,34 +9,37 @@
 #define LARGEURHEROSPIXEL 16
 #define HAUTEURHEROSPIXEL 27
 #define LARGEURMINE 20
-#define LARGEURARBRE 23
-#define HAUTEURARBRE 40
+#define LARGEURARBRE 22
+#define HAUTEURARBRE 22
 #define TAILLEROCHER 20
 #define LARGEURARMURERIE 80
-#define HAUTEURARMURERIE 60
+#define HAUTEURARMURERIE 40
 #define LARGEURCHATEAU 238
-#define HAUTEURCHATEAU 183
+#define HAUTEURCHATEAU 165
 #define HAUTEUREAU1 60
 #define LARGEUREAU1 80
 #define HAUTEUREAU2 60
 #define LARGEUREAU2 260
 #define HAUTEUREAU3 348
 #define LARGEUREAU3 137
-#define HAUTEUREAU4 595
-#define LARGEUREAU4 60
+#define HAUTEUREAU4 60
+#define LARGEUREAU4 595
 #define HAUTEURFORTIFICATION1 20
 #define LARGEURFORTIFICATION1 260
 #define HAUTEURFORTIFICATION2 328
 #define LARGEURFORTIFICATION2 20
 #define HAUTEURFORTIFICATION3 22
 #define LARGEURFORTIFICATION3 580
-#define HAUTEURFORTIFICATION4 349
-#define LARGEURFORTIFICATION4 19
+#define HAUTEURFORTIFICATION4 19
+#define LARGEURFORTIFICATION4 349
 #define HAUTEURFORTIFICATION5 22
 #define LARGEURFORTIFICATION5 220
 #define HAUTEURGRANDARBRE 100
 #define LARGEURGRANDARBRE 100
+#define HAUTEURMONTAGNE 90
+#define LARGEURMONTAGNE 380
 #define Param_Thread (*(T_Param_Thread*)my_Param_Thread)
+#define Param_Thread_Monstre (*(T_Param_Thread*)my_Param_Thread)->matrice->tab_monstres[id_thread]
 
 /* Déclaration de la structure héros pour utilisation */
 struct S_Heros;
@@ -68,6 +71,7 @@ typedef struct S_Monstre
       int vie;
       int degats;
       t_pos pos_monstre;
+      char * nom;
 
 }* T_Monstre;
 
@@ -141,6 +145,7 @@ extern SDL_Surface * fortification_3;
 extern SDL_Surface * fortification_4;
 extern SDL_Surface * fortification_5;
 extern SDL_Surface * grandArbre;
+extern SDL_Surface * montagne;
 
 SDL_Rect positionHeros;
 SDL_Rect positionMap;
@@ -163,6 +168,7 @@ SDL_Rect positionFortification_3;
 SDL_Rect positionFortification_4;
 SDL_Rect positionFortification_5;
 SDL_Rect positionGrandArbre;
+SDL_Rect positionMontagne;
 
 #ifdef __cplusplus
 extern "C"
@@ -174,14 +180,13 @@ void initMatrice(t_ecran_de_jeu matrice);
 t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros, int x, int y);
 T_Anim initialisationAnim(int direction);
 T_Param_Thread allocParamThread (t_ecran_de_jeu matrice, int nbdeplacement);
-T_Monstre allocMonstre(int vie, int damage, int ligne, int colonne);
+T_Monstre allocMonstre(char * nom, int vie, int damage, int ligne, int colonne);
 void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie, int direction, T_Anim anim, T_Heros heros);
 int takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_Heros heros, int largeur, int hauteur);
 int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur, int hauteur, int direction, int deplacement, T_Heros heros);
 bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, int deplacement);
 int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros heros);
 void* calculDeplacementMonstre(void* my_Param_Thread);
-void deplacementMonstre(T_Monstre monstre, t_ecran_de_jeu matrice, int direction);
 #ifdef __cplusplus
 }
 #endif

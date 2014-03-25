@@ -20,8 +20,8 @@
 
 int main ( int argc, char** argv )
 {
-      positionHeros.x = 200;
-      positionHeros.y = 200;
+      positionHeros.x = 60;
+      positionHeros.y = 90;
       positionMap.x = 0;
       positionMap.y = 0;
       positionBarreHaut.x = 0;
@@ -81,6 +81,7 @@ int main ( int argc, char** argv )
       fortification_4 = SDL_LoadBMP("images/fortification4.bmp");
       fortification_5 = SDL_LoadBMP("images/fortification5.bmp");
       grandArbre = SDL_LoadBMP("images/grand_arbre.bmp");
+      montagne = SDL_LoadBMP("images/montagne.bmp");
       //======================================================================//
       //                            création T_anim                           //
       //======================================================================//
@@ -118,15 +119,16 @@ int main ( int argc, char** argv )
       SDL_SetColorKey(chateau, SDL_SRCCOLORKEY, SDL_MapRGB(chateau->format, 255, 0, 0));
       SDL_SetColorKey(armurerie, SDL_SRCCOLORKEY, SDL_MapRGB(armurerie->format, 255, 0, 0));
       SDL_SetColorKey(grandArbre, SDL_SRCCOLORKEY, SDL_MapRGB(grandArbre->format, 255,0,0));
+      SDL_SetColorKey(montagne, SDL_SRCCOLORKEY, SDL_MapRGB(montagne->format, 255,0,0));
       SDL_Flip(ecran);
 
       T_Heros heros = allocHeros("TestHeros", "sol4.bmp");
-      matrice = chargementFichier("maps/map3.map", heros, positionHeros.x, positionHeros.y);
+      matrice = chargementFichier("maps/map1.map", heros, positionHeros.x, positionHeros.y);
 
       int hit = 0;
       int nbDeplacement =  1;
 
-      T_Param_Thread my_Param_Thread = allocParamThread(matrice, nbDeplacement);
+      //T_Param_Thread my_Param_Thread = allocParamThread(matrice, nbDeplacement);
 
       int direction = NUL;
 
