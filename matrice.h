@@ -11,6 +11,31 @@
 #define LARGEURMINE 20
 #define LARGEURARBRE 23
 #define HAUTEURARBRE 40
+#define TAILLEROCHER 20
+#define LARGEURARMURERIE 80
+#define HAUTEURARMURERIE 60
+#define LARGEURCHATEAU 238
+#define HAUTEURCHATEAU 183
+#define HAUTEUREAU1 60
+#define LARGEUREAU1 80
+#define HAUTEUREAU2 60
+#define LARGEUREAU2 260
+#define HAUTEUREAU3 348
+#define LARGEUREAU3 137
+#define HAUTEUREAU4 595
+#define LARGEUREAU4 60
+#define HAUTEURFORTIFICATION1 20
+#define LARGEURFORTIFICATION1 260
+#define HAUTEURFORTIFICATION2 328
+#define LARGEURFORTIFICATION2 20
+#define HAUTEURFORTIFICATION3 22
+#define LARGEURFORTIFICATION3 580
+#define HAUTEURFORTIFICATION4 349
+#define LARGEURFORTIFICATION4 19
+#define HAUTEURFORTIFICATION5 22
+#define LARGEURFORTIFICATION5 220
+#define HAUTEURGRANDARBRE 100
+#define LARGEURGRANDARBRE 100
 #define Param_Thread (*(T_Param_Thread*)my_Param_Thread)
 
 /* Déclaration de la structure héros pour utilisation */
@@ -103,6 +128,19 @@ extern SDL_Surface * arbre;
 extern SDL_Surface * barreHaut;
 extern SDL_Surface * barreVie;
 extern SDL_Surface * rocher;
+extern SDL_Surface * armurerie;
+extern SDL_Surface * chateau;
+extern SDL_Surface * eau_1;
+extern SDL_Surface * eau_2_1;
+extern SDL_Surface * eau_2_2;
+extern SDL_Surface * eau_3;
+extern SDL_Surface * eau_4;
+extern SDL_Surface * fortification_1;
+extern SDL_Surface * fortification_2;
+extern SDL_Surface * fortification_3;
+extern SDL_Surface * fortification_4;
+extern SDL_Surface * fortification_5;
+extern SDL_Surface * grandArbre;
 
 SDL_Rect positionHeros;
 SDL_Rect positionMap;
@@ -112,6 +150,19 @@ SDL_Rect positionBarreVie;
 SDL_Rect positionArbre;
 SDL_Rect positionMonstre;
 SDL_Rect positionRocher;
+SDL_Rect positionArmurerie;
+SDL_Rect positionChateau;
+SDL_Rect positionEau_1;
+SDL_Rect positionEau_2_1;
+SDL_Rect positionEau_2_2;
+SDL_Rect positionEau_3;
+SDL_Rect positionEau_4;
+SDL_Rect positionFortification_1;
+SDL_Rect positionFortification_2;
+SDL_Rect positionFortification_3;
+SDL_Rect positionFortification_4;
+SDL_Rect positionFortification_5;
+SDL_Rect positionGrandArbre;
 
 #ifdef __cplusplus
 extern "C"
@@ -120,7 +171,7 @@ extern "C"
 
 t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne, int posHerosLigne);
 void initMatrice(t_ecran_de_jeu matrice);
-t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros);
+t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros, int x, int y);
 T_Anim initialisationAnim(int direction);
 T_Param_Thread allocParamThread (t_ecran_de_jeu matrice, int nbdeplacement);
 T_Monstre allocMonstre(int vie, int damage, int ligne, int colonne);

@@ -28,12 +28,27 @@ SDL_Surface * mine = NULL;
 SDL_Surface * barreHaut = NULL;
 SDL_Surface * barreVie = NULL;
 SDL_Surface * rocher = NULL;
+SDL_Surface * armurerie = NULL;
+SDL_Surface * chateau = NULL;
+SDL_Surface * eau_1 = NULL;
+SDL_Surface * eau_2_1 = NULL;
+SDL_Surface * eau_2_2 = NULL;
+SDL_Surface * eau_3 = NULL;
+SDL_Surface * eau_4 = NULL;
+SDL_Surface * fortification_1 = NULL;
+SDL_Surface * fortification_2 = NULL;
+SDL_Surface * fortification_3 = NULL;
+SDL_Surface * fortification_4 = NULL;
+SDL_Surface * fortification_5 = NULL;
+SDL_Surface * grandArbre = NULL;
+
 
 //==========================================================//
 //                   variables globales                     //
 //==========================================================//
 
       static int cpt = 0;
+      static int cptHitbox = 0;
       static int verifDirection = NUL;
       static int nombreEntites = 0;
       struct S_ListePosition;
@@ -242,6 +257,13 @@ void initMatrice(t_ecran_de_jeu matrice)                                        
             }
       }
 }
+SDL_Rect affichageObjet(SDL_Surface * objet, SDL_Rect position, int i, int j)
+{
+      position.x = j;
+      position.y = i;
+      SDL_BlitSurface(objet, NULL, ecran, &position);
+      return position;
+}
 
 void remplissageMap(t_ecran_de_jeu matrice)
 {
@@ -251,21 +273,68 @@ void remplissageMap(t_ecran_de_jeu matrice)
             {
                   if(matrice->ecran[i][j] == 'M')
                   {
-                        positionMine.x = j;
-                        positionMine.y = i;
-                        SDL_BlitSurface(mine, NULL, ecran, &positionMine);
+                        positionMine = affichageObjet(mine, positionMine, i, j);
                   }
                   if(matrice->ecran[i][j] == 'A')
                   {
-                        positionArbre.x = j;
-                        positionArbre.y = i;
-                        SDL_BlitSurface(arbre, NULL, ecran, &positionArbre);
+                        positionArbre = affichageObjet(arbre, positionArbre, i, j);
                   }
                   if(matrice->ecran[i][j] == 'R')
                   {
-                        positionRocher.x = j;
-                        positionRocher.y = i;
-                        SDL_BlitSurface(rocher, NULL, ecran, &positionRocher);
+                        positionRocher = affichageObjet(rocher, positionRocher, i, j);
+                  }
+                  if(matrice->ecran[i][j] == 'S')
+                  {
+                        positionArmurerie = affichageObjet(armurerie, positionArmurerie, i, j);
+                  }
+                  if(matrice->ecran[i][j] == 'C')
+                  {
+                        positionChateau = affichageObjet(chateau, positionChateau, i, j);
+                  }
+                  if(matrice->ecran[i][j] == '1')
+                  {
+                        positionEau_1 = affichageObjet(eau_1, positionEau_1, i, j);
+                  }
+                  if(matrice->ecran[i][j] == '2')
+                  {
+                        positionEau_2_1 = affichageObjet(eau_2_1, positionEau_2_1, i, j);
+                  }
+                  if(matrice->ecran[i][j] == '3')
+                  {
+                        positionEau_2_2 = affichageObjet(eau_2_2, positionEau_2_2, i, j);
+                  }
+                  if(matrice->ecran[i][j] == '4')
+                  {
+                        positionEau_3 = affichageObjet(eau_3, positionEau_3, i, j);
+                  }
+                  if(matrice->ecran[i][j] == '5')
+                  {
+                        positionEau_4 = affichageObjet(eau_4, positionEau_4, i, j);
+                  }
+                  if(matrice->ecran[i][j] == '6')
+                  {
+                        positionFortification_1 = affichageObjet(fortification_1, positionFortification_1, i, j);
+                  }
+                  if(matrice->ecran[i][j] == '7')
+                  {
+                        positionFortification_2 = affichageObjet(fortification_2, positionFortification_2, i, j);
+                  }
+                  if(matrice->ecran[i][j] == '8')
+                  {
+                        positionFortification_3 = affichageObjet(fortification_3, positionFortification_3, i, j);
+                  }
+                  if(matrice->ecran[i][j] == '9')
+                  {
+                        positionFortification_4 = affichageObjet(fortification_4, positionFortification_4, i, j);
+
+                  }
+                  if(matrice->ecran[i][j] == '0')
+                  {
+                        positionFortification_5 = affichageObjet(fortification_5, positionFortification_5, i, j);
+                  }
+                  if(matrice->ecran[i][j] == 'G')
+                  {
+                        positionGrandArbre = affichageObjet(grandArbre, positionGrandArbre, i, j);
                   }
             }
       }
@@ -294,19 +363,20 @@ char* replaceString(char* string)
       strTmp[strlen(string)-1] = '\0';
       return strTmp;
 }
-void debutListe(T_ListePosition liste)
+T_ListePosition debutListe(T_ListePosition liste)
 {
       while(liste != NULL && liste->prec != NULL)
       {
             liste = liste->prec;
       }
+      return liste;
 }
 
 
 //==========================================================//
 //                     ChargementFichier                    //
 //==========================================================//
-t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros)
+t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros, int x, int y)
 {
       nombreEntites = 0;
       int nombreArbre = 0;
@@ -319,7 +389,7 @@ t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros)
       char nomMap[1024];
       char test[1024];
       char ligne[1024];
-      t_ecran_de_jeu matrice = create_ecran_de_jeu(HAUTEUR, LARGEUR, positionHeros.x, positionHeros.y);
+      t_ecran_de_jeu matrice = create_ecran_de_jeu(HAUTEUR, LARGEUR, x, y);
       initMatrice(matrice);
       FILE* fichier = fopen(nomFichier, "r");
 
@@ -386,15 +456,11 @@ t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros)
       {
             fprintf(stderr,"ERREUR LORS DE L'OUVERTURE DU FICHIER" );
       }
-//      while(ListeArbre != NULL && ListeArbre->prec != NULL)
-//      {
-//            ListeArbre = ListeArbre->prec;
-//      }
 
-      debutListe(ListeArbre);
-      //fprintf(stderr, "listearbre  %d", ListeArbre->numero);
-      //debutListe(ListeRocher);
+      ListeArbre = debutListe(ListeArbre);
+      ListeRocher = debutListe(ListeRocher);
       fclose(fichier);
+      cptHitbox = 0;
 return matrice;
 
 }
@@ -656,7 +722,7 @@ int compteurListe(T_ListePosition liste)
       }
       else return 0;
 }
-void ajoutHitbox(T_ListePosition liste, SDL_Rect position, t_ecran_de_jeu matrice, int hauteur, int largeur, char c)
+void ajoutHitboxListe(T_ListePosition liste, SDL_Rect position, t_ecran_de_jeu matrice, int hauteur, int largeur, char c)
 {
       if(liste != NULL)
       {
@@ -681,9 +747,39 @@ void ajoutHitbox(T_ListePosition liste, SDL_Rect position, t_ecran_de_jeu matric
       }
 }
 
+void ajoutHitboxSimple(SDL_Rect position, t_ecran_de_jeu matrice, int hauteur, int largeur, char c, int nb)
+{
+      if (nb != 0)
+      {
+            for(int i=0; i<largeur; i++)
+            {
+                  matrice->ecran[position.y][position.x+i+1] = tolower(c);
+                  matrice->ecran[position.y+hauteur][position.x+i+1] = tolower(c);
+            }
+            for(int i=0; i<hauteur; i++)
+            {
+                  matrice->ecran[position.y+i+1][position.x] = tolower(c);
+                  matrice->ecran[position.y+i+1][position.x+largeur] = tolower(c);
+            }
+      }
+}
+
 
 int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros heros)
 {
+      int nbChateau = 0;
+      int nbArmurerie = 0;
+      int nbEau_1 = 0;
+      int nbEau_2_1 = 0;
+      int nbEau_2_2 = 0;
+      int nbEau_3 = 0;
+      int nbEau_4 = 0;
+      int nbFortification1 = 0;
+      int nbFortification2 = 0;
+      int nbFortification3 = 0;
+      int nbFortification4 = 0;
+      int nbFortification5 = 0;
+      int nbGrandArbre = 0;
       if (direction == BAS)
       {
             matrice->positionHeros.ligne += nb;
@@ -705,9 +801,76 @@ int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros hero
       {
             for (int j=0; j<LARGEUR; j++)
             {
-                  if(matrice->ecran[i][j] != 'M' && matrice->ecran[i][j] != 'm' && matrice->ecran[i][j] != 'A' && matrice->ecran[i][j] != 'a')
+                  if(matrice->ecran[i][j] != 'M' && matrice->ecran[i][j] != 'm'
+                     && matrice->ecran[i][j] != 'A' && matrice->ecran[i][j] != 'a'
+                     && matrice->ecran[i][j] != 'C' && matrice->ecran[i][j] != 'c'
+                     && matrice->ecran[i][j] != 'S' && matrice->ecran[i][j] != 's'
+                     && matrice->ecran[i][j] != 'w' && matrice->ecran[i][j] != '1'
+                     && matrice->ecran[i][j] != '2' && matrice->ecran[i][j] != '3'
+                     && matrice->ecran[i][j] != '4' && matrice->ecran[i][j] != '5'
+                     && matrice->ecran[i][j] != '6' && matrice->ecran[i][j] != '7'
+                     && matrice->ecran[i][j] != '8' && matrice->ecran[i][j] != '9'
+                     && matrice->ecran[i][j] != '0' && matrice->ecran[i][j] != 'f'
+                     && matrice->ecran[i][j] != 'F' && matrice->ecran[i][j] != 'G'
+                     && matrice->ecran[i][j] != 'g' && matrice->ecran[i][j] != 'R'
+                     && matrice->ecran[i][j] != 'r')
                   {
                         matrice->ecran[i][j] = ' ';
+                  }
+                  else
+                  {
+                        if(matrice->ecran[i][j] == 'C')
+                        {
+                              nbChateau++;
+                        }
+                        if(matrice->ecran[i][j] == 'S')
+                        {
+                              nbArmurerie++;
+                        }
+                        if(matrice->ecran[i][j] == '1')
+                        {
+                              nbEau_1++;
+                        }
+                        if(matrice->ecran[i][j] == '2')
+                        {
+                              nbEau_2_1++;
+                        }
+                        if(matrice->ecran[i][j] == '3')
+                        {
+                              nbEau_2_2++;
+                        }
+                        if(matrice->ecran[i][j] == '4')
+                        {
+                              nbEau_3++;
+                        }
+                        if(matrice->ecran[i][j] == '5')
+                        {
+                              nbEau_4++;
+                        }
+                        if(matrice->ecran[i][j] == '6')
+                        {
+                              nbFortification1++;
+                        }
+                        if(matrice->ecran[i][j] == '7')
+                        {
+                              nbFortification2++;
+                        }
+                        if(matrice->ecran[i][j] == '8')
+                        {
+                              nbFortification3++;
+                        }
+                        if(matrice->ecran[i][j] == '9')
+                        {
+                              nbFortification4++;
+                        }
+                        if(matrice->ecran[i][j] == '0')
+                        {
+                              nbFortification5++;
+                        }
+                        if(matrice->ecran[i][j] == 'G')
+                        {
+                              nbGrandArbre++;
+                        }
                   }
                   if ((matrice->positionHeros.ligne == i) && (matrice->positionHeros.colonne == j))
                   {
@@ -715,18 +878,31 @@ int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros hero
                   }
             }
       }
-      if (cpt == 0)
+      if (cptHitbox == 0)
       {
-            for(int i=0; i<LARGEURMINE; i++)
-            {
-                  matrice->ecran[positionMine.y+i+1][positionMine.x] = 'm';
-                  matrice->ecran[positionMine.y+i+1][positionMine.x+LARGEURMINE] = 'm';
-                  matrice->ecran[positionMine.y][positionMine.x+i+1] = 'm';
-                  matrice->ecran[positionMine.y+LARGEURMINE][positionMine.x+i+1] = 'm';
-            }
-            ajoutHitbox(ListeArbre, positionArbre, matrice, HAUTEURARBRE, LARGEURARBRE, 'A');
+
+            ajoutHitboxSimple(positionChateau, matrice, HAUTEURCHATEAU, LARGEURCHATEAU, 'C', nbChateau);
+            ajoutHitboxSimple(positionArmurerie, matrice, HAUTEURARMURERIE, LARGEURARMURERIE, 'S', nbArmurerie);
+            ajoutHitboxSimple(positionEau_1, matrice, HAUTEUREAU1, LARGEUREAU1, 'W', nbEau_1);
+            ajoutHitboxSimple(positionEau_2_1, matrice, HAUTEUREAU2, LARGEUREAU2, 'W', nbEau_2_1);
+            ajoutHitboxSimple(positionEau_2_2, matrice, HAUTEUREAU2, LARGEUREAU2, 'W', nbEau_2_2);
+            ajoutHitboxSimple(positionEau_3, matrice, HAUTEUREAU3, LARGEUREAU3, 'W', nbEau_3);
+            ajoutHitboxSimple(positionEau_4, matrice, HAUTEUREAU4, LARGEUREAU4, 'W', nbEau_4);
+            ajoutHitboxSimple(positionFortification_1, matrice, HAUTEURFORTIFICATION1, LARGEURFORTIFICATION1, 'F', nbFortification1);
+            ajoutHitboxSimple(positionFortification_2, matrice, HAUTEURFORTIFICATION2, LARGEURFORTIFICATION2, 'F', nbFortification2);
+            ajoutHitboxSimple(positionFortification_3, matrice, HAUTEURFORTIFICATION3, LARGEURFORTIFICATION3, 'F', nbFortification3);
+            ajoutHitboxSimple(positionFortification_4, matrice, HAUTEURFORTIFICATION4, LARGEURFORTIFICATION4, 'F', nbFortification4);
+            ajoutHitboxSimple(positionFortification_5, matrice, HAUTEURFORTIFICATION5, LARGEURFORTIFICATION5, 'F', nbFortification5);
+            ajoutHitboxSimple(positionGrandArbre, matrice, HAUTEURGRANDARBRE, LARGEURGRANDARBRE, 'G', nbGrandArbre);
+
+
+            ajoutHitboxListe(ListeArbre, positionArbre, matrice, HAUTEURARBRE, LARGEURARBRE, 'A');
+            ajoutHitboxListe(ListeRocher, positionRocher, matrice, TAILLEROCHER, TAILLEROCHER, 'R');
+            ListeRocher = debutListe(ListeRocher);
+            printf(stderr, "listeRocher %d \n", ListeRocher->numero);
+      cptHitbox++;
       }
-      cpt++;
+
       return verificationDeplacementHitbox(matrice, matrice->positionHeros, LARGEURHEROSPIXEL, HAUTEURHEROSPIXEL, direction, nb, heros);
 }
 

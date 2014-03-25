@@ -1,0 +1,16 @@
+Arbre 1 : A, 80, 160
+Arbre 2 : A, 60, 210
+Arbre 3 : A, 60, 260
+Arbre 4 : A, 60, 310
+Arbre 5 : A, 60, 360
+Arbre 6 : A, 60, 410
+Arbre 7 : A, 60, 460
+Arbre 8 : A, 60, 510
+Arbre 9 : A, 60, 560
+
+Grand Arbre 1 : G, 200, 320
+
+Plage : B, 0,50
+
+Rocher 1 : R, 60, 140
+Rocher 2 : R, 370, 140

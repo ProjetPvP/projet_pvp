@@ -1,0 +1,16 @@
+Arbre 1 : A,60,0
+Arbre 2 : A,60,50
+Arbre 3 : A,60,100
+Arbre 4 : A,60,150
+Arbre 5 : A,60,200
+Arbre 6 : A,110,200
+Arbre 7 : A,220,200
+Arbre 8 : A,270,200
+Arbre 9 : A,60,350
+Arbre 10 : A,60,400
+Arbre 11 : A,60,450
+Arbre 12 : A,60,500
+Arbre 13 : A,60,550
+
+Eau 1 : E, 320, 0
+Eau 2 : E, 320, 340

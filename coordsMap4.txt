@@ -1,0 +1,25 @@
+Arbre 1 : A, 60, 10
+Arbre 2 : A, 60, 60
+Arbre 3 : A, 60, 110
+Rocher : A, 80, 160
+
+Montagne : M, 50, 160
+
+Grand arbre : G, 200, 170
+
+Eau : E, 320, 0
+
+Rocher 1 : R, 140, 540
+Rocher 2 : R, 160, 540
+Rocher 3 : R, 180, 540
+Rocher 4 : R, 180, 520
+Rocher 5 : R, 180, 500
+Rocher 6 : R, 200, 500
+Rocher 7 : R, 240, 500
+Rocher 8 : R, 220, 520
+Rocher 9 : R, 220, 540
+Rocher 10 : R, 240, 540
+Rocher 11 : R, 260, 540
+Rocher 12 : R, 280, 540
+Rocher 13 : R, 300, 540
+Rocher 14 : R, 280, 520

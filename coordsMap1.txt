@@ -1,0 +1,15 @@
+Arbre 1 : A, 185, 55
+Arbre 2 : A, 245, 55
+Arbre 3 : A, 305, 55
+
+Chateau : C, 155, 190
+
+Armurerie : S, 200, 480
+
+Eau : E, 100, 490
+
+Rempart_nord1 : 49,0
+Rempart_ouest : 70,0
+Rempart_sud : 378,20
+Rempart_est : 49,581
+Rempart_nord2 : 49,361 

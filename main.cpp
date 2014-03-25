@@ -21,7 +21,7 @@
 int main ( int argc, char** argv )
 {
       positionHeros.x = 200;
-      positionHeros.y = 300;
+      positionHeros.y = 200;
       positionMap.x = 0;
       positionMap.y = 0;
       positionBarreHaut.x = 0;
@@ -67,6 +67,20 @@ int main ( int argc, char** argv )
       myMap = SDL_LoadBMP("images/Map1Vide.bmp");
       mine = SDL_LoadBMP("nvMine.bmp");
       arbre = SDL_LoadBMP("images/arbre.bmp");
+      rocher = SDL_LoadBMP("images/rocher.bmp");
+      chateau = SDL_LoadBMP("images/chateau.bmp");
+      armurerie = SDL_LoadBMP("images/armurerie.bmp");
+      eau_1 = SDL_LoadBMP("images/eau1.bmp");
+      eau_2_1 = SDL_LoadBMP("images/eau2.bmp");
+      eau_2_2 = SDL_LoadBMP("images/eau2.bmp");
+      eau_3 = SDL_LoadBMP("images/eau3.bmp");
+      eau_4 = SDL_LoadBMP("images/eau4.bmp");
+      fortification_1 = SDL_LoadBMP("images/fortification1.bmp");
+      fortification_2 = SDL_LoadBMP("images/fortification2.bmp");
+      fortification_3 = SDL_LoadBMP("images/fortification3.bmp");
+      fortification_4 = SDL_LoadBMP("images/fortification4.bmp");
+      fortification_5 = SDL_LoadBMP("images/fortification5.bmp");
+      grandArbre = SDL_LoadBMP("images/grand_arbre.bmp");
       //======================================================================//
       //                            création T_anim                           //
       //======================================================================//
@@ -100,10 +114,14 @@ int main ( int argc, char** argv )
 
       SDL_SetColorKey(mine, SDL_SRCCOLORKEY, SDL_MapRGB(mine->format, 255, 0, 0));
       SDL_SetColorKey(arbre, SDL_SRCCOLORKEY, SDL_MapRGB(arbre->format, 255, 0, 0));
+      SDL_SetColorKey(rocher, SDL_SRCCOLORKEY, SDL_MapRGB(rocher->format, 255, 0, 0));
+      SDL_SetColorKey(chateau, SDL_SRCCOLORKEY, SDL_MapRGB(chateau->format, 255, 0, 0));
+      SDL_SetColorKey(armurerie, SDL_SRCCOLORKEY, SDL_MapRGB(armurerie->format, 255, 0, 0));
+      SDL_SetColorKey(grandArbre, SDL_SRCCOLORKEY, SDL_MapRGB(grandArbre->format, 255,0,0));
       SDL_Flip(ecran);
 
       T_Heros heros = allocHeros("TestHeros", "sol4.bmp");
-      matrice = chargementFichier("maps/depart.map", heros);
+      matrice = chargementFichier("maps/map3.map", heros, positionHeros.x, positionHeros.y);
 
       int hit = 0;
       int nbDeplacement =  1;
