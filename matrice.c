@@ -272,7 +272,6 @@ SDL_Rect affichageObjet(SDL_Surface * objet, SDL_Rect position, int i, int j)
       SDL_BlitSurface(objet, NULL, ecran, &position);
       return position;
 }
-
 void remplissageMap(t_ecran_de_jeu matrice)
 {
       for(int i=0; i<HAUTEUR; i++)
@@ -388,11 +387,13 @@ T_ListePosition debutListe(T_ListePosition liste)
 //==========================================================//
 //                     ChargementFichier                    //
 //==========================================================//
-t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros, int x, int y)
+t_ecran_de_jeu chargementFichier(t_ecran_de_jeu matrice, char* nomFichier, T_Heros heros, int x, int y)
 {
       nombreEntites = 0;
       int nombreArbre = 0;
       int nombreRocher = 0;
+      ListeArbre = NULL;
+      ListeRocher = NULL;
 
       char nord[1024];
       char sud[1024];
@@ -401,24 +402,28 @@ t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros, int x, int y)
       char nomMap[1024];
       char test[1024];
       char ligne[1024];
-      t_ecran_de_jeu matrice = create_ecran_de_jeu(HAUTEUR, LARGEUR, x, y);
+      matrice = create_ecran_de_jeu(HAUTEUR, LARGEUR, x, y);
       initMatrice(matrice);
+      positionHeros.x = x;
+      matrice->positionHeros.ligne = y;
+      matrice->positionHeros.colonne = x;
+      positionHeros.y = y;
       FILE* fichier = fopen(nomFichier, "r");
 
 
       if (fichier != NULL)
       {
-            fprintf(stderr, "prout");
+            fprintf(stderr, "prout position heros y %d x %d\n", positionHeros.x, positionHeros.y);
             fgets(nord, 1024, fichier);
             tableauDirection[0] = replaceString(nord);
-            fprintf(stderr, "tableaudirection[1] = %s\n", tableauDirection[0]);
+            fprintf(stderr, "tableaudirection[0] = %s\n", tableauDirection[0]);
             fgets(sud, 1024, fichier);
             tableauDirection[1] = replaceString(sud);
             fgets(est, 1024, fichier);
             tableauDirection[2] = replaceString(est);
             fgets(ouest, 1024, fichier);
             tableauDirection[3] = replaceString(ouest);
-            fprintf(stderr, "tableaudirection[4] = %s\n", tableauDirection[3]);
+            fprintf(stderr, "tableaudirection[3] = %s\n", tableauDirection[3]);
             fgets(nomMap, 1024, fichier);
             fgets(test, 1024, fichier);
 
@@ -463,6 +468,66 @@ t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros, int x, int y)
                               ListeRocher = ajoutObjetListe(ListeRocher, temp, nombreRocher);
                               nombreRocher++;
                         }
+                        if(c == '1')
+                        {
+                              positionEau_1.x = x;
+                              positionEau_1.y = y;
+                        }
+                        if(c == '2')
+                        {
+                              positionEau_2_1.x = x;
+                              positionEau_2_1.y = y;
+                        }
+                        if(c == '3')
+                        {
+                              positionEau_2_2.x = x;
+                              positionEau_2_2.y = y;
+                        }
+                        if(c == '4')
+                        {
+                              positionEau_3.x = x;
+                              positionEau_3.y = y;
+                        }
+                        if(c == '5')
+                        {
+                              positionEau_4.x = x;
+                              positionEau_4.y = y;
+                        }
+                        if(c == '6')
+                        {
+                              positionFortification_1.x = x;
+                              positionFortification_1.y = y;
+                        }
+                        if(c == '7')
+                        {
+                              positionFortification_2.x = x;
+                              positionFortification_2.y = y;
+                        }
+                        if(c == '8')
+                        {
+                              positionFortification_3.x = x;
+                              positionFortification_3.y = y;
+                        }
+                        if(c == '9')
+                        {
+                              positionFortification_4.x = x;
+                              positionFortification_4.y = y;
+                        }
+                        if(c == '0')
+                        {
+                              positionFortification_5.x = x;
+                              positionFortification_5.y = y;
+                        }
+                        if(c == 'S')
+                        {
+                              positionArmurerie.x = x;
+                              positionArmurerie.y = y;
+                        }
+                        if(c == 'C')
+                        {
+                              positionChateau.x = x;
+                              positionChateau.y = y;
+                        }
 //                        if (c == 'E')
 //                        {
 //                              char* nomMonstre = (char*)malloc(10*sizeof(char));
@@ -484,7 +549,6 @@ t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros, int x, int y)
       {
             fprintf(stderr,"ERREUR LORS DE L'OUVERTURE DU FICHIER" );
       }
-
       fprintf(stderr, "prout avntfinfichier");
       ListeArbre = debutListe(ListeArbre);
       ListeRocher = debutListe(ListeRocher);
@@ -690,52 +754,85 @@ int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur
 //                      vérifier poussee                    //
 //==========================================================//
 
-bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, int deplacement)
+bool verifierPoussee(t_ecran_de_jeu * matrice, int direction, t_pos positionHeros, int deplacement, T_Heros heros)
 {
       if (direction == GAUCHE)
       {
+            if(positionHeros.colonne == 1+deplacement)
+            {
+                  if(strcmp(tableauDirection[3],"NULL") != 0)
+                  {
+                        initMatrice(*matrice);
+                        *matrice = chargementFichier(*matrice, tableauDirection[3], heros, positionHeros.colonne+550, positionHeros.ligne);
+                        return false;
+                  }
+            }
             if (positionHeros.colonne < 1+deplacement)
             {
                   return false;
             }
-            else if (matrice->ecran[positionHeros.ligne][positionHeros.colonne-1] == ' ')
+            else if ((*matrice)->ecran[positionHeros.ligne][positionHeros.colonne-1] == ' ')
             {
                   return true;
             }
       }
       else if (direction == DROITE)
       {
+            if(positionHeros.colonne == LARGEUR-2-deplacement-LARGEURHEROSPIXEL)
+            {
+                  if(strcmp(tableauDirection[2],"NULL") != 0)
+                  {
+                        initMatrice(*matrice);
+                        *matrice = chargementFichier(*matrice, tableauDirection[2], heros, positionHeros.colonne-550, positionHeros.ligne);
+                        return false;
+                  }
+            }
             if (positionHeros.colonne > LARGEUR-2-deplacement-LARGEURHEROSPIXEL)            // parce que la matrice est définie sur [0-(LARGEUR-1)][0-(HAUTEUR-1)]
             {                                                                               // LARGEURHEROSPIXEL pour pas que le heros dépasse l'écran
                   return false;
             }
-            else if (matrice->ecran[positionHeros.ligne][positionHeros.colonne+1+LARGEURHEROSPIXEL] == ' ')
+            else if ((*matrice)->ecran[positionHeros.ligne][positionHeros.colonne+1+LARGEURHEROSPIXEL] == ' ')
             {
                   return true;
             }
       }
       else if (direction == HAUT)
       {
-            if (positionHeros.ligne < 1+deplacement)
+            if(positionHeros.ligne == 50+deplacement)
             {
-                  if(strcmp(tableauDirection[0], "NULL") == 1)
+                  if(strcmp(tableauDirection[0],"NULL") != 0)
                   {
-
+                        initMatrice(*matrice);
+                        *matrice = chargementFichier(*matrice, tableauDirection[0], heros, positionHeros.colonne, positionHeros.ligne+320);
+                        return false;
                   }
+
+            }
+            if (positionHeros.ligne < 50+deplacement)
+            {
                   return false;
             }
-            else if (matrice->ecran[positionHeros.ligne-1][positionHeros.colonne] == ' ')
+            else if ((*matrice)->ecran[positionHeros.ligne-1][positionHeros.colonne] == ' ')
             {
                   return true;
             }
       }
       else if (direction == BAS)
       {
+            if (positionHeros.ligne == HAUTEUR -2-deplacement-HAUTEURHEROSPIXEL)
+            {
+                  if(strcmp(tableauDirection[1],"NULL") != 0)
+                  {
+                        initMatrice(*matrice);
+                        *matrice = chargementFichier(*matrice, tableauDirection[0], heros, positionHeros.colonne, positionHeros.ligne-330);
+                        return false;
+                  }
+            }
             if (positionHeros.ligne > HAUTEUR -2-deplacement-HAUTEURHEROSPIXEL)                 // HAUTEURHEROSPIXEL pour pas que le heros dépasse l'écran
             {
                   return false;
             }
-            else if (matrice->ecran[positionHeros.ligne+1+HAUTEURHEROSPIXEL][positionHeros.colonne] == ' ')
+            else if ((*matrice)->ecran[positionHeros.ligne+1+HAUTEURHEROSPIXEL][positionHeros.colonne] == ' ')
             {
                   return true;
             }
@@ -933,6 +1030,7 @@ int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros hero
 
             ajoutHitboxListe(ListeArbre, positionArbre, matrice, HAUTEURARBRE, LARGEURARBRE, 'A');
             ajoutHitboxListe(ListeRocher, positionRocher, matrice, TAILLEROCHER, TAILLEROCHER, 'R');
+            int cptmatrice = 0;
       cptHitbox++;
       }
       if (direction == BAS)

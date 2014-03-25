@@ -123,7 +123,7 @@ int main ( int argc, char** argv )
       SDL_Flip(ecran);
 
       T_Heros heros = allocHeros("TestHeros", "sol4.bmp");
-      matrice = chargementFichier("maps/map1.map", heros, positionHeros.x, positionHeros.y);
+      matrice = chargementFichier(matrice, "maps/map1.map", heros, positionHeros.x, positionHeros.y);
 
       int hit = 0;
       int nbDeplacement =  1;
@@ -154,7 +154,7 @@ int main ( int argc, char** argv )
                   }
                         if (keystates[SDLK_UP])                                     // les keystats permettent le déplacement en diagonal
                         {
-                              if (verifierPoussee(matrice, HAUT,matrice->positionHeros, nbDeplacement))
+                              if (verifierPoussee(&matrice, HAUT,matrice->positionHeros, nbDeplacement, heros))
                               {
                                    hit = replacementHeros(matrice, HAUT, nbDeplacement, heros);
                               }
@@ -163,7 +163,7 @@ int main ( int argc, char** argv )
                         }
                         if (keystates[SDLK_DOWN])
                         {
-                              if (verifierPoussee(matrice, BAS, matrice->positionHeros, nbDeplacement))
+                              if (verifierPoussee(&matrice, BAS, matrice->positionHeros, nbDeplacement, heros))
                               {
                                    hit = replacementHeros(matrice, BAS, nbDeplacement, heros);
                               }
@@ -172,7 +172,7 @@ int main ( int argc, char** argv )
                         }
                         if (keystates[SDLK_RIGHT])
                         {
-                              if (verifierPoussee(matrice, DROITE, matrice->positionHeros, nbDeplacement))
+                              if (verifierPoussee(&matrice, DROITE, matrice->positionHeros, nbDeplacement, heros))
                               {
                                     hit = replacementHeros(matrice, DROITE, nbDeplacement, heros);
                               }
@@ -181,7 +181,7 @@ int main ( int argc, char** argv )
                         }
                         if (keystates[SDLK_LEFT])
                         {
-                              if (verifierPoussee(matrice, GAUCHE, matrice->positionHeros, nbDeplacement))
+                              if (verifierPoussee(&matrice, GAUCHE, matrice->positionHeros, nbDeplacement, heros))
                               {
                                     hit = replacementHeros(matrice, GAUCHE, nbDeplacement, heros);
                               }

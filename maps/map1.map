@@ -1,7 +1,7 @@
-Nord
-Sud
-Est
-Ouest
+maps/map2.map
+NULL
+NULL
+NULL
 images/Map1Vide.bmp
 test
 A
@@ -32,8 +32,8 @@ S
 377
 20
 9
-49
+51
 581
 0
-49
+51
 361

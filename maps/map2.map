@@ -1,7 +1,7 @@
-Nord
-Sud
-Est
-Ouest
+NULL
+maps/map1.map
+maps/map4.map
+maps/map3.map
 images/Map2Vide.bmp
 test
 A
@@ -52,7 +52,6 @@ A
 A
 60
 570
-
 2
 320
 0

@@ -30,8 +30,8 @@
 #define LARGEURFORTIFICATION2 20
 #define HAUTEURFORTIFICATION3 22
 #define LARGEURFORTIFICATION3 580
-#define HAUTEURFORTIFICATION4 19
-#define LARGEURFORTIFICATION4 349
+#define HAUTEURFORTIFICATION4 348
+#define LARGEURFORTIFICATION4 19
 #define HAUTEURFORTIFICATION5 22
 #define LARGEURFORTIFICATION5 220
 #define HAUTEURGRANDARBRE 100
@@ -177,14 +177,14 @@ extern "C"
 
 t_ecran_de_jeu create_ecran_de_jeu(int hauteur, int largeur, int posHerosColonne, int posHerosLigne);
 void initMatrice(t_ecran_de_jeu matrice);
-t_ecran_de_jeu chargementFichier(char* nomFichier, T_Heros heros, int x, int y);
+t_ecran_de_jeu chargementFichier(t_ecran_de_jeu matrice, char* nomFichier, T_Heros heros, int x, int y);
 T_Anim initialisationAnim(int direction);
 T_Param_Thread allocParamThread (t_ecran_de_jeu matrice, int nbdeplacement);
 T_Monstre allocMonstre(char * nom, int vie, int damage, int ligne, int colonne);
 void LectureMatrice(t_ecran_de_jeu matrice, SDL_Surface* ecran, SDL_Surface *  barreVie, int direction, T_Anim anim, T_Heros heros);
 int takedamage(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, T_Heros heros, int largeur, int hauteur);
 int verificationDeplacementHitbox(t_ecran_de_jeu matrice, t_pos pos, int largeur, int hauteur, int direction, int deplacement, T_Heros heros);
-bool verifierPoussee(t_ecran_de_jeu matrice, int direction, t_pos positionHeros, int deplacement);
+bool verifierPoussee(t_ecran_de_jeu * matrice, int direction, t_pos positionHeros, int deplacement, T_Heros heros);
 int replacementHeros(t_ecran_de_jeu matrice, int direction, int nb, T_Heros heros);
 void* calculDeplacementMonstre(void* my_Param_Thread);
 #ifdef __cplusplus
